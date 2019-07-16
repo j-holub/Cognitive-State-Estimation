@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from lib.dataprocessing.experimentdata import ExperimentData
+import lib.dataprocessing as dp
 
 
 # Argument Parsing
@@ -13,9 +13,11 @@ arguments = parser.parse_args()
 
 # path to the JSON file created by the JsPsych N-Back Experiment
 exp_data_path = os.path.abspath(arguments.ExperimentData)
+video_path    = os.path.abspath(arguments.Video)
 
 
 # Assertion Checks
 assert os.path.exists(exp_data_path) and os.path.isfile(exp_data_path)
 
-exp_data = ExperimentData(exp_data_path)
+
+exp_data = dp.ExperimentData(exp_data_path)
