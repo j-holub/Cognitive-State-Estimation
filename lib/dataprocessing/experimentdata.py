@@ -14,6 +14,8 @@ class ExperimentData:
     Methods:
         get_trials(n)
             returns all trials with timestamps for a given n
+        get_video_lecture_timestamps()
+            returns a tuple with start and end timestamp for the video lecture
     """
 
 
@@ -41,6 +43,9 @@ class ExperimentData:
                 trials = [trial for trial in data if trial['test_part'] == 'n-back' and trial['n'] == n]
                 # group the stimuli into their respective trial
                 self.__n_back_data[n] = self.__group_n_back_trials(trials)
+
+            # video lecture data is always the last trial
+            self.__video_lecture_data = data[-1]
 
 
 
@@ -79,6 +84,19 @@ class ExperimentData:
         return trial_data
 
 
+
+    def get_video_lecture_timestamps(self):
+        """Gets the starting and ending timestamp of the video lecture
+
+        Returns:
+            :rtype: (datetime.datetime, datetime.datetime): tuple of starting and
+                ending timestamp
+        """
+
+        start = datetime.datetime.fromtimestamp(self.__video_lecture_data['trial_start']/1000)
+        end = datetime.datetime.fromtimestamp(self.__video_lecture_data['trial_end']/1000)
+
+        return (start, end)
 
 
 
