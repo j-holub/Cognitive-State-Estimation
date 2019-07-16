@@ -18,4 +18,4 @@ exp_data_path = os.path.abspath(arguments.ExperimentData)
 # Assertion Checks
 assert os.path.exists(exp_data_path) and os.path.isfile(exp_data_path)
 
-ExperimentData(exp_data_path)
+exp_data = ExperimentData(exp_data_path)

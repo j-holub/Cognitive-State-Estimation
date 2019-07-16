@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 
@@ -10,6 +11,9 @@ class ExperimentData:
 
     ...
 
+    Methods:
+        get_trials(n)
+            returns all trials with timestamps for a given n
     """
 
 
@@ -28,25 +32,52 @@ class ExperimentData:
             # load the json data
             data = json.load(json_file)
 
-            # extract the n-back data
-            # 1-back
-            one_back   = [trial for trial in data if trial['test_part'] == 'n-back' and trial['n'] == 1]
-            # 2-back
-            two_back   = [trial for trial in data if trial['test_part'] == 'n-back' and trial['n'] == 2]
-            # 3-back
-            three_back = [trial for trial in data if trial['test_part'] == 'n-back' and trial['n'] == 3]
-            # 4-back
-            four_back  = [trial for trial in data if trial['test_part'] == 'n-back' and trial['n'] == 4]
-            # 5-back
-            five_back  = [trial for trial in data if trial['test_part'] == 'n-back' and trial['n'] == 5]
-
-
+            # dictionary to hold the trials for a n difficulty
             self.__n_back_data = {}
-            self.__n_back_data[1] = self.__group_n_back_trials(one_back)
-            self.__n_back_data[2] = self.__group_n_back_trials(two_back)
-            self.__n_back_data[3] = self.__group_n_back_trials(three_back)
-            self.__n_back_data[4] = self.__group_n_back_trials(four_back)
-            self.__n_back_data[5] = self.__group_n_back_trials(five_back)
+
+            # group the trials by difficulty
+            for n in range(1,6):
+                # get lists for each difficulty
+                trials = [trial for trial in data if trial['test_part'] == 'n-back' and trial['n'] == n]
+                # group the stimuli into their respective trial
+                self.__n_back_data[n] = self.__group_n_back_trials(trials)
+
+
+
+
+    def get_trials(self, n: int):
+        """ Gets the relevant data for all trials of difficulty level n
+
+        Extracts the first and last relevant timestamp of each trial along with
+        the difficulty level n
+
+        Parameters:
+            n (int): difficulty level / n step. Range 1-5
+
+        Returns:
+            list: list of trials of difficulty level n, with starting and ending
+                timestamp
+        """
+        # list to store the trials information
+        trial_data = []
+        # retrieve the data
+        trials = self.__n_back_data[n]
+
+        for trial in trials:
+            # starting timestamp is the first stimulus the subject is able to answer for
+            timestamp_start = datetime.datetime.fromtimestamp(trial[n]['trial_start']/1000)
+            # ending timestemp is the last stimulus
+            timestamp_end   = datetime.datetime.fromtimestamp(trial[-1]['trial_end']/1000)
+
+            # append the data to the trials list
+            trial_data.append({
+                'start': timestamp_start,
+                'end': timestamp_end,
+                'n': n
+            })
+
+        return trial_data
+
 
 
 
