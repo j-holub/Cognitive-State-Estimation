@@ -58,8 +58,6 @@ class DataHandler:
         # get the number of chunks
         chunks = math.floor(frames.shape[0]/self.__windowsize)
         # split the frames into segments of windowsize
-        print(frames.shape)
-        print(chunks)
         segments = np.split(frames[:-diff,...], chunks, axis=0)
 
         # add the segments to the data
