@@ -14,9 +14,12 @@ class VideoHandler:
     It keeps a reference to the video which can be accessed when needed
 
     Methods:
+        set_video(video_path)
+            opens a new video
         get_frames(start, end)
             retrieves the frames between two timestamps
     """
+
 
 
     def __init__(self, video_path: str):
@@ -27,14 +30,26 @@ class VideoHandler:
         # store the creating time which is the starting time of the video
         self.__video_start = datetime.datetime.fromtimestamp(os.path.getctime(video_path))
 
-        # store the path the video
-        self.__video_path = video_path
-
         # video capture stream
         self.__cap = cv2.VideoCapture(video_path)
 
         # face extraction
         self.__fe = FaceExtractor()
+
+
+
+    def set_video(self, video_path: str):
+        """Opens a new video file
+
+        Parameters:
+            video_path (str): the path to the video file
+        """
+
+        # close the video stream if it's opened
+        if(self.__cap.isOpened()):
+            self.__cap.release()
+        # open the new video
+        self.__cap.open(video_path)
 
 
 
