@@ -71,16 +71,17 @@ class VideoHandler:
         """
 
         # calculate the timestamps for the boundaries
-        start_timestamp = ((start- self.__video_start).microseconds/1000)
-        end_timestamp   = ((end  - self.__video_start).microseconds/1000)
+        start_timestamp = ((start - self.__video_start).total_seconds() * 1000)
+        end_timestamp   = ((end   - self.__video_start).total_seconds() * 1000)
+
 
         # get the framenumber for the last timestamp
-        self.__cap.set(cv2.CAP_PROP_POS_FRAMES, end_timestamp)
+        self.__cap.set(cv2.CAP_PROP_POS_MSEC, end_timestamp)
         end_frame = self.__cap.get(cv2.CAP_PROP_POS_FRAMES)
 
 
         # set the video to the beginning and get the frame number
-        self.__cap.set(cv2.CAP_PROP_POS_FRAMES, start_timestamp)
+        self.__cap.set(cv2.CAP_PROP_POS_MSEC, start_timestamp)
         frame_pos = self.__cap.get(cv2.CAP_PROP_POS_FRAMES)
 
         # numpy array of frames
