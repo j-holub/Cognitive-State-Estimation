@@ -4,6 +4,8 @@ import os
 import cv2
 import numpy as np
 
+from .faceextract import FaceExtractor
+
 class VideoHandler:
     """
     Class representing a video handler, that stores a video from the experiment
@@ -17,7 +19,7 @@ class VideoHandler:
     """
 
 
-    def __init__(self, video_path):
+    def __init__(self, video_path: str):
         """
         Parameters:
             video_path (str): path to the video file recorded in the experiment
@@ -31,13 +33,17 @@ class VideoHandler:
         # video capture stream
         self.__cap = cv2.VideoCapture(video_path)
 
+        # face extraction
+        self.__fe = FaceExtractor()
+
 
 
     def get_frames(self, start: datetime, end: datetime):
-        """Returns all frames between two timestamps
+        """Returns the frames cropped to the face between two timestamps
 
         Given the start timestamp and end timestamp as datetime objects, this
-        method will return a numpy array with all the frames inbetween
+        method will return a numpy array with all the frames inbetween, cropped
+        to the face
 
         Parameters:
             start (datetime):
@@ -46,7 +52,7 @@ class VideoHandler:
                 end timestamp
 
         Returns:
-            ndarray: numpy array of the shape (frames, height, width)
+            ndarray: numpy array of the shape (frames, 128, 128)
         """
 
         # calculate the timestamps for the boundaries
@@ -63,17 +69,22 @@ class VideoHandler:
         frame_pos = self.__cap.get(cv2.CAP_PROP_POS_FRAMES)
 
         # numpy array of frames
-        frames = np.zeros([1,1080,1920])
+        frames = np.zeros([1,128,128])
 
+        # iterate over all the frames
         while(frame_pos <= end_frame):
-            check, frame = self.__cap.read()
-            if(check):
-                print(frame_pos)
-                # convert the frame to grayscale
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                # add it to all the frames
-                frames = np.concatenate((frames, np.expand_dims(frame, axis=0)), axis=0)
-                # increment the frame number
+            success, frame = self.__cap.read()
+            # if the frame could be read
+            if(success):
+                found, face = self.__fe.extractFace(frame, 128)
+                # if a face was found
+                if(found):
+                    # convert the frame to grayscale
+                    face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
+                    # add it to all the frames
+                    frames = np.concatenate((frames, np.expand_dims(face, axis=0)), axis=0)
+                    # increment the frame number
+
                 frame_pos = frame_pos+1
 
         # return all the frames minus the first 0 frame
