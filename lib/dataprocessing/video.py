@@ -28,7 +28,7 @@ class VideoHandler:
             video_path (str): path to the video file recorded in the experiment
         """
         # store the creating time which is the starting time of the video
-        self.__video_start = datetime.datetime.fromtimestamp(os.path.getctime(video_path))
+        self.__video_start = self.__read_timestamp_from_filename(os.path.basename(video_path))
 
         # video capture stream
         self.__cap = cv2.VideoCapture(video_path)
@@ -104,3 +104,20 @@ class VideoHandler:
 
         # return all the frames minus the first 0 frame
         return frames[1:,...]
+
+
+
+    def __read_timestamp_from_filename(self, filename: str):
+        """Computes the timestamp from the video file name
+
+        Parameters:
+            filename (str):
+                the name of the video file that contains the timestamp.
+                It must be in the format YY-MM-DD_-hh-mm-ss
+
+        Returns:
+            datetime: datetime object of the timestamp
+        """
+
+        timestamp = [int(date) for date in os.path.splitext(filename.replace('_', '-'))[0].split('-')]
+        return datetime.datetime(*timestamp)
