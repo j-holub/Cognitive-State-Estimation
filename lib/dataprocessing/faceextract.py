@@ -60,7 +60,6 @@ class FaceExtractor:
 
          # list with face detections with a high enough confidence
         detections = [detections[0, 0, i] for i in range(detections.shape[2]) if detections[0, 0, i, 2] > self.__confidence_threshold]
-        print(len(detections))
         # only extract a face if there was any face found
         if(len(detections) > 0):
             # height and width of the frame

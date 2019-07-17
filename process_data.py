@@ -23,6 +23,3 @@ video_path    = os.path.abspath(arguments.Video)
 assert os.path.exists(exp_data_path) and os.path.isfile(exp_data_path)
 assert os.path.exists(video_path) and os.path.isfile(video_path) \
     and os.path.splitext(video_path)[1] == '.mp4'
-
-
-exp_data = dp.ExperimentData(exp_data_path)
