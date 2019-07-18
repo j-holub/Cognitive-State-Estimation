@@ -58,10 +58,6 @@ class DataHandler:
         # get the number of chunks
         chunks = math.floor(frames.shape[0]/self.__windowsize)
         # split the frames into segments of windowsize
-<<<<<<< Updated upstream
-=======
-        
->>>>>>> Stashed changes
         segments = np.split(frames[:-diff,...], chunks, axis=0)
 
         # add the segments to the data
@@ -96,6 +92,9 @@ class DataHandler:
                 path to the directory where the output should be stored in
             name (str):
                 name the files should have, for example the participant number
+
+        Returns:
+            str, str: output path to the data and the labels file
         """
 
         data_path   = os.path.join(path, '{}_{}_data.npy'.format(name, self.__windowsize))
@@ -104,3 +103,5 @@ class DataHandler:
         # write the data without the very first zero entry
         np.save(data_path, self.__data[1:,...])
         np.save(labels_path, self.__labels[1:])
+
+        return data_path, labels_path

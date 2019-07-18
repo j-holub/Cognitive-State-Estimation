@@ -62,21 +62,35 @@ assert os.path.exists(video_path) and os.path.isfile(video_path) \
     and os.path.splitext(video_path)[1] == '.mp4'
 assert os.path.exists(output_path) and os.path.isdir(output_path)
 
+print('')
+print('Experiment Data: {}'.format(exp_data_path))
+print('Video: {}'.format(video_path))
+print('Output Path: {}'.format(output_path))
+print('Windowsize: {}'.format(windowsize))
+print('Participant: {}'.format(participant))
+print('')
+
 # create the data processing objects
 exp_data      = dp.ExperimentData(exp_data_path)
 video_handler = dp.VideoHandler(video_path)
 data_handler  = dp.DataHandler(windowsize)
 
+print("Processing N-levels...")
 # iterate over the difficulty levels 1-5
 for n in range(1,6):
+    print("N={}".format(n))
     # get the trial data for each difficulty level
     trials = exp_data.get_trials(n)
     # iterate over every trial
-    for trial in trials:
+    for i, trial in enumerate(trials):
+        print("  Trial {}".format(i+1))
         # get the face frames for the trial
         frames = video_handler.get_frames(trial['start'], trial['end'])
         # store the away in the data handler with the correct label
         data_handler.add_frames(frames, n)
 
+print("Writing data to disk...")
 # write the data to disk
-data_handler.write(output_path, participant)
+data_path, labels_path = data_handler.write(output_path, participant)
+print("  {}".format(data_path))
+print("  {}".format(labels_path))
