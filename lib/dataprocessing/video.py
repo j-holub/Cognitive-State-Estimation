@@ -85,7 +85,7 @@ class VideoHandler:
         frame_pos = self.__cap.get(cv2.CAP_PROP_POS_FRAMES)
 
         # numpy array of frames
-        frames = np.zeros([1,128,128])
+        frames = np.zeros([1,128,128], dtype=np.uint8)
 
         # iterate over all the frames
         while(frame_pos <= end_frame):
@@ -96,7 +96,7 @@ class VideoHandler:
                 # if a face was found
                 if(found):
                     # convert the frame to grayscale
-                    face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
+                    face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY).astype(np.uint8)
                     # add it to all the frames
                     frames = np.concatenate((frames, np.expand_dims(face, axis=0)), axis=0)
                     # increment the frame number
@@ -120,5 +120,7 @@ class VideoHandler:
             datetime: datetime object of the timestamp
         """
 
-        timestamp = [int(date) for date in os.path.splitext(filename.replace('_', '-'))[0].split('-')]
+        timestamp = [int(date) for date in
+            os.path.splitext(filename.replace('_', '-'))[0].split('-')
+        ]
         return datetime.datetime(*timestamp)
