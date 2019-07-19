@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 
 
-
 class FaceExtractor:
     """Class representing a module to extract faces from images
 
@@ -30,7 +29,7 @@ class FaceExtractor:
         self.__cnn = cv2.dnn.readNetFromCaffe(configFile, modelFile)
 
         # confidence threshold for the face detection
-        self.__confidence_threshold = 0.6
+        self.__confidence_threshold = 0.4
 
 
 
