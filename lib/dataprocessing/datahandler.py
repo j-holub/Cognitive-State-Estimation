@@ -31,7 +31,7 @@ class DataHandler:
         self.__windowsize = windowsize
 
         # the numpy array to store all the frames in
-        self.__data   = np.zeros([1, windowsize, 128, 128], dtype=np.uint8)
+        self.__data   = np.zeros([1, windowsize, 64, 64], dtype=np.uint8)
         # the numpy array to hold the labels
         self.__labels = np.zeros(1, dtype=np.uint8)
 

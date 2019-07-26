@@ -91,7 +91,7 @@ class FaceExtractor:
             assert c_h == c_w
 
             # resize the image to 128 pixels
-            cropped_image = cv2.resize(cropped_image, (128, 128))
+            cropped_image = cv2.resize(cropped_image, (size, size))
 
             return (True, cropped_image)
 

@@ -67,7 +67,7 @@ class VideoHandler:
                 end timestamp
 
         Returns:
-            ndarray: numpy array of the shape (frames, 128, 128)
+            ndarray: numpy array of the shape (frames, 64, 64)
         """
 
         # calculate the timestamps for the boundaries
@@ -85,14 +85,14 @@ class VideoHandler:
         frame_pos = self.__cap.get(cv2.CAP_PROP_POS_FRAMES)
 
         # numpy array of frames
-        frames = np.zeros([1,128,128], dtype=np.uint8)
+        frames = np.zeros([1,64,64], dtype=np.uint8)
 
         # iterate over all the frames
         while(frame_pos <= end_frame):
             success, frame = self.__cap.read()
             # if the frame could be read
             if(success):
-                found, face = self.__fe.extractFace(frame, 128)
+                found, face = self.__fe.extractFace(frame, 64)
                 # if a face was found
                 if(found):
                     # convert the frame to grayscale

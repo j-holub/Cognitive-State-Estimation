@@ -40,7 +40,7 @@ class ExperimentData:
             # group the trials by difficulty
             for n in range(1,6):
                 # get lists for each difficulty
-                trials = [trial for trial in data if trial['test_part'] == 'n-back' and trial['n'] == n]
+                trials = [trial for trial in data[1:] if trial['test_part'] == 'n-back' and trial['n'] == n]
                 # group the stimuli into their respective trial
                 self.__n_back_data[n] = self.__group_n_back_trials(trials)
 
