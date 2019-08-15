@@ -78,6 +78,7 @@ class ExperimentData:
             trial_data.append({
                 'start': timestamp_start,
                 'end': timestamp_end,
+                'score': self.__score(trial),
                 'n': n
             })
 
@@ -143,3 +144,31 @@ class ExperimentData:
         for id in node_ids]
 
         return grouped_trials
+
+
+
+    def __score(self, trial: list):
+        """Computes the number of correct answers for a trial
+
+        Given the set of stimuli gathered from the n-back experiment it computes
+        how many correct answers the subject gave
+
+        Parameters:
+            trial (list): list of trial JSON objects produced by JsPsych
+
+        Returns:
+            float: percentage of correct answers
+
+        Raises:
+            AssertionError: when the number of stimuli for the trial is not 10
+        """
+
+        # get the difficulty level
+        n = int(trial[0]['n'])
+        # omit the first n trials where there is no answer
+        relevant = trial[n:]
+
+        assert(len(relevant) == 10)
+
+        # score is the number of correct answers divided by 10
+        return len([trial for trial in relevant if trial['correct']]) / 10
