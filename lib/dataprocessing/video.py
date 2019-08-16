@@ -101,7 +101,7 @@ class VideoHandler:
                     frames = np.concatenate((frames, np.expand_dims(face, axis=0)), axis=0)
                     # increment the frame number
 
-                frame_pos = frame_pos+1
+            frame_pos = frame_pos+1
 
         # return all the frames minus the first 0 frame
         return frames[1:,...]
