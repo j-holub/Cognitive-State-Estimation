@@ -2,7 +2,7 @@ import numpy as np
 
 from .experimentdata import ExperimentData
 
-class Statistics:
+class Statistic:
     """Class that stores the data from the different experiments and offers various
        methods to compute statistics and metrics on that data
 

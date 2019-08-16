@@ -12,7 +12,7 @@ Classes:
         Handles the JSON file created by the n-back experiment implemented in
         JsPsych. Processes the data and offers various method to access the
         relevant information
-    Statistics
+    Statistic
         Computes various statistics about the experiment data, such as average
         score and so on
     VideoHandler
@@ -22,7 +22,7 @@ Classes:
 
 from .datahandler    import DataHandler
 from .experimentdata import ExperimentData
-from .statistics     import Statistics
+from .statistic      import Statistic
 from .video          import VideoHandler
 
 from .util import *
