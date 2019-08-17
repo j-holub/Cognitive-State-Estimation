@@ -53,7 +53,7 @@ class VideoHandler:
 
 
 
-    def get_frames(self, start: datetime, end: datetime):
+    def get_frames(self, start: datetime, end: datetime, size: int):
         """Returns the frames cropped to the face between two timestamps
 
         Given the start timestamp and end timestamp as datetime objects, this
@@ -65,9 +65,11 @@ class VideoHandler:
                 start timestamp
             end (datetime):
                 end timestamp
+            size (int):
+                size the face image should be cropped to (squared)
 
         Returns:
-            ndarray: numpy array of the shape (frames, 64, 64)
+            ndarray: numpy array of the shape (frames, size, size)
         """
 
         # calculate the timestamps for the boundaries
@@ -85,14 +87,14 @@ class VideoHandler:
         frame_pos = self.__cap.get(cv2.CAP_PROP_POS_FRAMES)
 
         # numpy array of frames
-        frames = np.zeros([1,64,64], dtype=np.uint8)
+        frames = np.zeros([1,size,size], dtype=np.uint8)
 
         # iterate over all the frames
         while(frame_pos <= end_frame):
             success, frame = self.__cap.read()
             # if the frame could be read
             if(success):
-                found, face = self.__fe.extractFace(frame, 64)
+                found, face = self.__fe.extractFace(frame, size)
                 # if a face was found
                 if(found):
                     # convert the frame to grayscale

@@ -20,6 +20,8 @@ Parameters:
         window size, which means how many frames should be chunked together for
         one label
         default: 60
+    crop (int):
+        crop dimension for the face images extracted from the frames
 """
 
 import argparse
@@ -37,12 +39,15 @@ parser.add_argument('--output', '-o', default='.',
                      help='Directory to store the output in')
 parser.add_argument('--window', '-w', default=60,
                      help='The window size for a single input in frames')
+parser.add_argument('--crop', '-c', default=64,
+                     help='The crop size for the frames')
 arguments = parser.parse_args()
 
 # Argument Processing
 exp_data_path = os.path.abspath(arguments.ExperimentData)
 output_path   = os.path.abspath(arguments.output)
 windowsize    = int(arguments.window)
+cropsize      = int(arguments.crop)
 
 
 
@@ -65,13 +70,14 @@ print('Experiment Data: {}'.format(exp_json))
 print('Video: {}'.format(video_path))
 print('Output Path: {}'.format(output_path))
 print('Windowsize: {}'.format(windowsize))
+print('Cropsize: {}'.format(cropsize))
 print('Participant: {}'.format(participant))
 print('')
 
 # create the data processing objects
 exp_data      = dp.ExperimentData(exp_json)
 video_handler = dp.VideoHandler(video_path)
-data_handler  = dp.DataHandler(windowsize)
+data_handler  = dp.DataHandler(windowsize, cropsize)
 
 print("Processing N-levels...")
 # iterate over the difficulty levels 1-5
@@ -83,7 +89,7 @@ for n in range(1,6):
     for i, trial in enumerate(trials):
         print("  Trial {}".format(i+1))
         # get the face frames for the trial
-        frames = video_handler.get_frames(trial['start'], trial['end'])
+        frames = video_handler.get_frames(trial['start'], trial['end'], cropsize)
         # store the away in the data handler with the correct label
         data_handler.add_frames(frames, n)
 
