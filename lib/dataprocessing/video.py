@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 
 from .faceextract import FaceExtractor
+from .opticalflow import OpticalFlow
 
 class VideoHandler:
     """
@@ -16,8 +17,12 @@ class VideoHandler:
     Methods:
         set_video(video_path)
             opens a new video
-        get_frames(start, end)
+        get_frames(start, end, crop)
             retrieves the frames between two timestamps
+        get_optical_flow_frames(start, end, crop)
+            retrieves the frames between two timestamps
+            and computes the optical flow between consecutive
+            frames
     """
 
 
@@ -36,6 +41,9 @@ class VideoHandler:
         # face extraction
         self.__fe = FaceExtractor()
 
+        # optical flow module
+        self.__of = OpticalFlow()
+
 
 
     def set_video(self, video_path: str):
@@ -53,7 +61,7 @@ class VideoHandler:
 
 
 
-    def get_frames(self, start: datetime, end: datetime, size: int):
+    def get_frames(self, start: datetime, end: datetime, crop: int):
         """Returns the frames cropped to the face between two timestamps
 
         Given the start timestamp and end timestamp as datetime objects, this
@@ -65,11 +73,11 @@ class VideoHandler:
                 start timestamp
             end (datetime):
                 end timestamp
-            size (int):
+            crop (int):
                 size the face image should be cropped to (squared)
 
         Returns:
-            ndarray: numpy array of the shape (frames, size, size)
+            ndarray: numpy array of the shape (frames, crop, crop)
         """
 
         # calculate the timestamps for the boundaries
@@ -87,14 +95,14 @@ class VideoHandler:
         frame_pos = self.__cap.get(cv2.CAP_PROP_POS_FRAMES)
 
         # numpy array of frames
-        frames = np.zeros([1,size,size], dtype=np.uint8)
+        frames = np.zeros([1,crop,crop], dtype=np.uint8)
 
         # iterate over all the frames
         while(frame_pos <= end_frame):
             success, frame = self.__cap.read()
             # if the frame could be read
             if(success):
-                found, face = self.__fe.extractFace(frame, size)
+                found, face = self.__fe.extractFace(frame, crop)
                 # if a face was found
                 if(found):
                     # convert the frame to grayscale
@@ -107,6 +115,46 @@ class VideoHandler:
 
         # return all the frames minus the first 0 frame
         return frames[1:,...]
+
+
+
+    def get_optical_flow_frames(self, start: datetime, end: datetime, crop: int):
+        """Returns the frames cropped to the face but as optical flow images
+
+        Optical flow images encode the information about what has changed between
+        two frames with color and intensity using the HSV color space.
+
+        Parameters:
+            start (datetime):
+                start timestamp
+            end (datetime):
+                end timestamp
+            crop (int):
+                size the face image should be cropped to (squared)
+
+        Returns:
+            ndarray: numpy array of the shape (frames, crop, crop, 3)
+        """
+
+        # compute the grayscale frames for the given timespan
+        facial_frames = self.get_frames(start, end, crop)
+
+        # optical flow frames
+        of_frames = np.zeros([1, crop, crop, 3], dtype=np.uint8)
+
+        for i in range(1, len(facial_frames)):
+            # get the two frames to compute the optical flow for
+            prev = facial_frames[i-1]
+            curr = facial_frames[i]
+
+            # compute the optical flow image between the frames
+            of_image = self.__of.optical_flow(prev, curr)
+
+            # add the frames to the matrix
+            of_frames = np.concatenate((of_frames, np.expand_dims(of_image, axis=0)), axis=0)
+
+
+        return of_frames[1:,...]
 
 
 

@@ -53,7 +53,7 @@ class DataHandler:
 
         # see how many frames we need to drop in the end to get chucks
         # of the windowsize
-        diff = frames.shape[0] % self.__windowsize
+        diff = frames.shape[0] % self.__data.shape[1]
         # get the number of chunks
         chunks = math.floor(frames.shape[0]/self.__data.shape[1])
         # split the frames into segments of windowsize
@@ -96,8 +96,8 @@ class DataHandler:
             str, str: output path to the data and the labels file
         """
 
-        data_path   = os.path.join(path, '{}_{}_data.npy'.format(name, self.__windowsize))
-        labels_path = os.path.join(path, '{}_{}_labels.npy'.format(name, self.__windowsize))
+        data_path   = os.path.join(path, '{}_{}_data.npy'.format(name, self.__data.shape[1]))
+        labels_path = os.path.join(path, '{}_{}_labels.npy'.format(name, self.__data.shape[1]))
 
         # write the data without the very first zero entry
         np.save(data_path, self.__data[1:,...])
