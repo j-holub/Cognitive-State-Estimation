@@ -22,16 +22,15 @@ class DataHandler:
     """
 
 
-    def __init__(self, windowsize: int, cropsize: int):
+    def __init__(self, shape: tuple):
         """
         Parameters:
-            windowsize (int): how many frames per label
+            shape (tuple): the shape of the data image data without the
+                the axis that corresponds to the amount of data
         """
-        # save the windowsize
-        self.__windowsize = windowsize
 
         # the numpy array to store all the frames in
-        self.__data   = np.zeros([1, windowsize, cropsize, cropsize], dtype=np.uint8)
+        self.__data   = np.zeros([1, *shape], dtype=np.uint8)
         # the numpy array to hold the labels
         self.__labels = np.zeros(1, dtype=np.uint8)
 
@@ -56,7 +55,7 @@ class DataHandler:
         # of the windowsize
         diff = frames.shape[0] % self.__windowsize
         # get the number of chunks
-        chunks = math.floor(frames.shape[0]/self.__windowsize)
+        chunks = math.floor(frames.shape[0]/self.__data.shape[1])
         # split the frames into segments of windowsize
         segments = np.split(frames[:-diff,...], chunks, axis=0)
 
