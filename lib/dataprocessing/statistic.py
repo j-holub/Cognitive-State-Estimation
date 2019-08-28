@@ -19,6 +19,12 @@ class Statistic:
             average_scores_all_subjects()
                 computes the average score for n=1 to n=5 for each subjects and
                 returns it as a matrix (np.ndarray)
+            global_average_scores()
+                computes the averages of the average_scores for each n level and
+                returns them as a 5 element vector
+            global_std_deviation()
+                computes the standard deviations of the average_scores for each n
+                level and returns them as a 5 element vector
     """
 
 
@@ -87,10 +93,20 @@ class Statistic:
 
 
     def global_average_scores(self):
-        """Computes the average for each n across all subjects^
+        """Computes the average for each n across all subjects
 
             Returns:
                 np.ndarray: 5x1 matrix with the average scores for n=1 to n=5
         """
 
         return np.mean(self.average_scores_all_subjects(), axis=0)
+
+
+    def global_std_deviation(self):
+        """Computes the standard deviation for each n across all subjects
+
+            Returns:
+                np.ndarray: 5x1 matrix with the standard deviation scores for n=1 to n=5
+        """
+
+        return np.std(self.average_scores_all_subjects(), axis=0)

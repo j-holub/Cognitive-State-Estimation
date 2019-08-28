@@ -58,6 +58,7 @@ for data in exp_data_files:
 # get the relevant metrics
 average_subject_scores = stat.average_scores_all_subjects()
 global_average_scores  = stat.global_average_scores()
+global_std_deviation   = stat.global_std_deviation()
 
 # create the statistics object
 statistics = {}
@@ -68,6 +69,8 @@ for i in range(average_subject_scores.shape[0]):
     statistics['average_scores'].append(average_subject_scores[i,...].tolist())
 # global average
 statistics['global_average'] = global_average_scores.tolist()
+# standard deviation
+statistics['std_deviation'] = global_std_deviation.tolist()
 
 # write the output as json
 with open(out_file, 'w') as out:
