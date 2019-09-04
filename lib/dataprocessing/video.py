@@ -4,6 +4,7 @@ import os
 import cv2
 import numpy as np
 
+from .eyeextract import EyeExtractor
 from .faceextract import FaceExtractor
 from .opticalflow import OpticalFlow
 
@@ -37,6 +38,9 @@ class VideoHandler:
 
         # video capture stream
         self.__cap = cv2.VideoCapture(video_path)
+
+        # eye extraction
+        self.__ee = EyeExtractor()
 
         # face extraction
         self.__fe = FaceExtractor()
@@ -155,6 +159,41 @@ class VideoHandler:
 
 
         return of_frames[1:,...]
+
+
+    def get_eye_frames(self, start: datetime, end: datetime, crop: int):
+
+        # calculate the timestamps for the boundaries
+        start_timestamp = ((start - self.__video_start).total_seconds() * 1000)
+        end_timestamp   = ((end   - self.__video_start).total_seconds() * 1000)
+
+
+        # get the framenumber for the last timestamp
+        self.__cap.set(cv2.CAP_PROP_POS_MSEC, end_timestamp)
+        end_frame = self.__cap.get(cv2.CAP_PROP_POS_FRAMES)
+
+
+        # set the video to the beginning and get the frame number
+        self.__cap.set(cv2.CAP_PROP_POS_MSEC, start_timestamp)
+        frame_pos = self.__cap.get(cv2.CAP_PROP_POS_FRAMES)
+
+        # numpy array of frames
+        frames = np.zeros([1,crop,crop], dtype=np.uint8)
+
+        # iterate over all the frames
+        while(frame_pos <= end_frame):
+            success, frame = self.__cap.read()
+            # if the frame could be read
+            if(success):
+                # found, eye = self.__ee.get_eye(frame, 64)
+                found, eye = self.__ee.extractEye(frame, 64)
+                if(found):
+                    eye = cv2.cvtColor(eye, cv2.COLOR_BGR2GRAY).astype(np.uint8)
+                    frames = np.concatenate((frames, np.expand_dims(eye, axis=0)), axis=0)
+
+            frame_pos += 1
+
+        return frames[1:,...]
 
 
 
