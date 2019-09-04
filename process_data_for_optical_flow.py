@@ -24,6 +24,11 @@ Parameters:
         default: 60
     crop (int):
         crop dimension for the face images extracted from the frames
+        default: 64
+    subsample (int):
+        how many frames to subsample the time series data by, n means that
+        every n-th frame is combined to one chunk
+        default: 1
 """
 
 import argparse
@@ -43,6 +48,8 @@ parser.add_argument('--window', '-w', default=60,
                      help='The window size for a single input in frames')
 parser.add_argument('--crop', '-c', default=64,
                      help='The crop size for the frames')
+parser.add_argument('--subsample', '-s', default=1,
+                     help='How many frames to subsample the time series by')
 arguments = parser.parse_args()
 
 # Argument Processing
@@ -50,6 +57,7 @@ exp_data_path = os.path.abspath(arguments.ExperimentData)
 output_path   = os.path.abspath(arguments.output)
 windowsize    = int(arguments.window)
 cropsize      = int(arguments.crop)
+subsample     = int(arguments.subsample)
 
 
 
@@ -57,6 +65,10 @@ cropsize      = int(arguments.crop)
 # Assertion Checks
 assert os.path.exists(exp_data_path) and os.path.isdir(exp_data_path)
 assert os.path.exists(output_path) and os.path.isdir(output_path)
+
+assert windowsize > 0
+assert cropsize > 0
+assert subsample > 0
 
 # retrieve the files from the experiment directory
 exp_json, video_path, participant = dp.util.getExperimentInfo(exp_data_path)
@@ -73,6 +85,7 @@ print('Video: {}'.format(video_path))
 print('Output Path: {}'.format(output_path))
 print('Windowsize: {}'.format(windowsize))
 print('Cropsize: {}'.format(cropsize))
+print('Subsampling: {}'.format(subsample))
 print('Participant: {}'.format(participant))
 print('')
 

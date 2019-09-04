@@ -22,17 +22,22 @@ class DataHandler:
     """
 
 
-    def __init__(self, shape: tuple):
+    def __init__(self, shape: tuple, subsample: int = 1):
         """
         Parameters:
             shape (tuple): the shape of the data image data without the
                 the axis that corresponds to the amount of data
+            subsample (int): how many frames to subsample the time series by
+                default: 1 (no subsampling at all)
         """
+        # subsample rate
+        self.__subsample = subsample
 
         # the numpy array to store all the frames in
         self.__data   = np.zeros([1, *shape], dtype=np.uint8)
         # the numpy array to hold the labels
         self.__labels = np.zeros(1, dtype=np.uint8)
+
 
 
 
@@ -51,18 +56,26 @@ class DataHandler:
                 label for the frames
         """
 
-        # see how many frames we need to drop in the end to get chucks
-        # of the windowsize
-        diff = frames.shape[0] % self.__data.shape[1]
-        # get the number of chunks
-        chunks = math.floor(frames.shape[0]/self.__data.shape[1])
-        # split the frames into segments of windowsize
-        segments = np.split(frames[:-diff,...], chunks, axis=0)
+        # get the windowsize
+        windowsize = self.__data.shape[1]
 
-        # add the segments to the data
-        for segment in segments:
-            self.__data   = np.concatenate((self.__data, np.expand_dims(segment, axis=0)), axis=0)
-            self.__labels = np.append(self.__labels, np.expand_dims(label, axis=0))
+        for x in range(0, self.__subsample):
+            # subsample the frames using numpy magic
+            subsampled_frames = frames[x::self.__subsample]
+            # see how many frames we need to drop in the end to get chunks
+            # of the windowsize
+            diff = subsampled_frames.shape[0] % windowsize
+            # get the number of chunks
+            chunks = math.floor(subsampled_frames.shape[0] / windowsize)
+            # split the frames into segments of windowsize
+            segments = np.split(subsampled_frames[:-diff,...], chunks, axis=0) \
+                if diff > 0 \
+                else np.split(subsampled_frames, chunks, axis=0)
+
+            # add the segments to the data
+            for segment in segments:
+                self.__data   = np.concatenate((self.__data, np.expand_dims(segment, axis=0)), axis=0)
+                self.__labels = np.append(self.__labels, np.expand_dims(label, axis=0))
 
         assert self.__data.shape[0] == self.__labels.shape[0]
 
@@ -96,8 +109,18 @@ class DataHandler:
             str, str: output path to the data and the labels file
         """
 
-        data_path   = os.path.join(path, '{}_{}_data.npy'.format(name, self.__data.shape[1]))
-        labels_path = os.path.join(path, '{}_{}_labels.npy'.format(name, self.__data.shape[1]))
+        # create the filename
+        name_str = '{}_{}@{}_{}x{}'.format(
+            name,
+            self.__data.shape[1],
+            self.__subsample,
+            self.__data.shape[2],
+            self.__data.shape[2]
+        )
+
+        # path to the numpy files
+        data_path   = os.path.join(path, '{}_data.npy'.format(name_str))
+        labels_path = os.path.join(path, '{}_labels.npy'.format(name_str))
 
         # write the data without the very first zero entry
         np.save(data_path, self.__data[1:,...])
