@@ -2,28 +2,47 @@
 
 The script reads the video and the JSON file created by the JsPsych N-Back Experiment
 and extracts the frames belonging to the n-back trials with the correct label of
-difficulty. It extracts the face in the frames, transforms the image to grayscale
-and resizes it to 128x128
+difficulty.
+
+Depending on the processing method chosen it does one of the following:
+    face
+        it extracts the face in every frame, transforms it to a grayscale image
+        and outputs them as chunks of time series
+    eye
+        it extracts the right eye in every frame, transforms it to a grayscale image
+        and outputs them as chunks of time series
+    opticalflow
+        it extracts the face in every frame and computes the optical flow image
+        for every consecutive couple of two frames. It outputs them as chunks
+        of time series
 
 The output are two .npy files, one containing the input data, which consists of
 chunks of frames according to the windowsize.
-Its dimension is (chunks, windowsize, 128, 128)
+For face and eye time series its dimension is (chunks, windowsize, crop, crop)
+For optical flow time series its dimension is (chunks, windowsize, crop, crop, 3)
+
+---------------
 
 Parameters:
+    ProcessingMethod (str):
+        The way the data should be processed
+            face:        time series of grayscale face images
+            eye:         time series of grayscale eye images
+            opticalflow: time series of optical flow images
     ExperimentData (str):
         path to the directory storing all the files gathered from the N-Back
         experiment
     output (str, optional):
         directory where the output should be stored in.
         default: '.'
-    window (int):
+    window (int, optional):
         window size, which means how many frames should be chunked together for
         one label
         default: 60
-    crop (int):
+    crop (int, optional):
         crop dimension for the face images extracted from the frames
         default: 64
-    subsample (int):
+    subsample (int, optional):
         how many frames to subsample the time series data by, n means that
         every n-th frame is combined to one chunk
         default: 1
@@ -37,6 +56,8 @@ import lib.dataprocessing as dp
 
 # Argument Parsing
 parser = argparse.ArgumentParser()
+parser.add_argument('ProcessingMethod', choices=['eye', 'face', 'opticalflow'],
+                     help='Which method to choose for processing the data')
 parser.add_argument('ExperimentData',
                      help='The directory that holds all the data recorded at the\
                            N-Back experiment')
@@ -51,13 +72,12 @@ parser.add_argument('--subsample', '-s', default=1,
 arguments = parser.parse_args()
 
 # Argument Processing
+method        = arguments.ProcessingMethod
 exp_data_path = os.path.abspath(arguments.ExperimentData)
 output_path   = os.path.abspath(arguments.output)
 windowsize    = int(arguments.window)
 cropsize      = int(arguments.crop)
 subsample     = int(arguments.subsample)
-
-
 
 
 # Assertion Checks
@@ -78,6 +98,7 @@ assert os.path.exists(exp_json) and os.path.isfile(exp_json) \
 
 
 print('')
+print('Processing Method: {}'.format(method))
 print('Experiment Data: {}'.format(exp_json))
 print('Video: {}'.format(video_path))
 print('Output Path: {}'.format(output_path))
@@ -90,19 +111,34 @@ print('')
 # create the data processing objects
 exp_data      = dp.ExperimentData(exp_json)
 video_handler = dp.VideoHandler(video_path)
-data_handler  = dp.DataHandler((windowsize, cropsize, cropsize),subsample)
+
+# set up the data handler according to the method
+if(method in ['face', 'eye']):
+    data_handler  = dp.DataHandler((windowsize, cropsize, cropsize),subsample)
+# optical flow
+else:
+    data_handler  = dp.DataHandler((windowsize, cropsize, cropsize, 3), subsample)
+
+
+# choose the right processing function accoding to the method
+method_functions = {
+    'face': video_handler.get_frames,
+    'eye': video_handler.get_eye_frames,
+    'opticalflow': video_handler.get_optical_flow_frames
+}
+process_frames = method_functions[method]
 
 print("Processing N-levels...")
 # iterate over the difficulty levels 1-5
-for n in range(1,2):
+for n in range(1,6):
     print("N={}".format(n))
     # get the trial data for each difficulty level
     trials = exp_data.get_trials(n)
     # iterate over every trial
-    for i, trial in enumerate(trials[:1]):
+    for i, trial in enumerate(trials):
         print("  Trial {}".format(i+1))
         # get the face frames for the trial
-        frames = video_handler.get_frames(trial['start'], trial['end'], cropsize)
+        frames = process_frames(trial['start'], trial['end'], cropsize)
         # store the away in the data handler with the correct label
         data_handler.add_frames(frames, n)
 
