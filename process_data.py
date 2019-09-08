@@ -90,7 +90,7 @@ print('')
 # create the data processing objects
 exp_data      = dp.ExperimentData(exp_json)
 video_handler = dp.VideoHandler(video_path)
-data_handler  = dp.DataHandler((windowsize, cropsize, cropsize),4)
+data_handler  = dp.DataHandler((windowsize, cropsize, cropsize),subsample)
 
 print("Processing N-levels...")
 # iterate over the difficulty levels 1-5
