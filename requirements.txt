@@ -1,3 +1,5 @@
-dlib>=19.17.0 
-opencv-python>=4.1.0.25
+dlib>=19.17.0
+Keras>=2.2.4
 numpy>=1.16.4
+opencv-python>=4.1.0.25
+tensorflow>=1.14.0
