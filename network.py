@@ -20,6 +20,8 @@ parser.add_argument('--epochs', '-e', default=10,
                      help='Number of epochs to train')
 parser.add_argument('--validation-split', '-v', default=0.9,
                      help='Split ratio between train and test data')
+parser.add_argument('--save-model', '-s',
+                     help='Save the keras model to the path specified')
 arguments = parser.parse_args()
 
 
@@ -28,6 +30,7 @@ features_file = os.path.abspath(arguments.Features)
 labels_file   = os.path.abspath(arguments.Labels)
 epochs        = int(arguments.epochs)
 val_split     = float(arguments.validation_split)
+out_dir      = os.path.abspath(arguments.save_model)
 
 assert os.path.exists(features_file) \
         and os.path.isfile(features_file) \
@@ -35,6 +38,7 @@ assert os.path.exists(features_file) \
 assert os.path.exists(labels_file) \
         and os.path.isfile(labels_file) \
         and os.path.splitext(labels_file)[1] == '.npy'
+assert os.path.exists(out_dir)
 assert epochs > 0
 assert val_split>0 and val_split <1
 
@@ -54,7 +58,6 @@ net.compile(optimizer=optimizers.sgd(lr=0.01, momentum=0.9),
 
 # get the training data from the data handler
 train_x, train_y = datahandler.train_data()
-
 # train the model
 net.fit(train_x,
         train_y,
@@ -62,3 +65,7 @@ net.fit(train_x,
         batch_size=5,
         validation_data=datahandler.test_data()
 )
+
+# save the model if specified
+if(out_dir):
+    net.save(os.path.join(out_dir, '{}_e{}_model.h5'.format(network, epochs)))
