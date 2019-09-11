@@ -9,7 +9,7 @@ Parameters:
     Data (str):
         Directory containing all the different .npy files of the participants
     output (str, optional):
-        Output directory
+        Output directory. Same as Data if not specified
 """
 
 import argparse
@@ -20,12 +20,15 @@ import numpy as np
 parser = argparse.ArgumentParser()
 parser.add_argument('Data',
                      help='Directory containing all the processed .npy files')
-parser.add_argument('--output', '-o', default='.',
-                     help='Output directory for the combined .npy files')
+parser.add_argument('--output', '-o',
+                     help='Output directory for the combined .npy files. Same as \
+                           Data if not specified')
 arguments = parser.parse_args()
 
 dir     = os.path.abspath(arguments.Data)
-out_dir = os.path.abspath(arguments.output)
+out_dir = os.path.abspath(arguments.output) \
+            if arguments.output \
+            else os.path.abspath(arguments.Data)
 
 
 assert os.path.exists(dir) and os.path.isdir(dir)
