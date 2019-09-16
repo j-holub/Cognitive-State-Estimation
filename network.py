@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 
 import keras.utils
@@ -18,10 +19,12 @@ parser.add_argument('Labels',
                      help='Numpy file containing the labels')
 parser.add_argument('--epochs', '-e', default=10,
                      help='Number of epochs to train')
-parser.add_argument('--validation-split', '-v', default=0.9,
+parser.add_argument('--validation-split', '-vs', default=0.9,
                      help='Split ratio between train and test data')
-parser.add_argument('--save-model', '-s',
+parser.add_argument('--save-model', '-sm',
                      help='Save the keras model to the path specified')
+parser.add_argument('--save-history', '-sh',
+                     help='Save the training history to the path specified')
 arguments = parser.parse_args()
 
 
@@ -30,7 +33,8 @@ features_file = os.path.abspath(arguments.Features)
 labels_file   = os.path.abspath(arguments.Labels)
 epochs        = int(arguments.epochs)
 val_split     = float(arguments.validation_split)
-out_dir      = os.path.abspath(arguments.save_model)
+out_dir       = os.path.abspath(arguments.save_model)
+his_dir       = os.path.abspath(arguments.save_history)
 
 assert os.path.exists(features_file) \
         and os.path.isfile(features_file) \
@@ -39,6 +43,7 @@ assert os.path.exists(labels_file) \
         and os.path.isfile(labels_file) \
         and os.path.splitext(labels_file)[1] == '.npy'
 assert os.path.exists(out_dir)
+assert os.path.exists(his_dir)
 assert epochs > 0
 assert val_split>0 and val_split <1
 
@@ -59,7 +64,7 @@ net.compile(optimizer=optimizers.sgd(lr=0.01, momentum=0.9),
 # get the training data from the data handler
 train_x, train_y = datahandler.train_data()
 # train the model
-net.fit(train_x,
+history = net.fit(train_x,
         train_y,
         epochs=epochs,
         batch_size=5,
@@ -69,3 +74,8 @@ net.fit(train_x,
 # save the model if specified
 if(out_dir):
     net.save(os.path.join(out_dir, '{}_e{}_model.h5'.format(network, epochs)))
+
+# save the history if specified
+if(his_dir):
+    with open(os.path.join(his_dir, '{}_e{}_history.json'.format(network, epochs)), 'w') as his_file:
+        json.dump(history.history, his_file)
