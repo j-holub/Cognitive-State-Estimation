@@ -1,11 +1,10 @@
 import argparse
+import json
 import os
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-import lib.deeplearning as dp
-import lib.statistics   as stat
 
 parser = argparse.ArgumentParser()
 subparser = parser.add_subparsers(dest='Metric')
@@ -26,6 +25,22 @@ confm.add_argument('--output', '-o',
                     default='.',
                     help='Where to output the confusion matrix image')
 
+
+loss = subparser.add_parser('loss')
+loss.add_argument('History',
+                   help='History output file from the network training')
+loss.add_argument('--output', '-o',
+                   default='.',
+                   help='Where to output the plot image')
+
+
+loss = subparser.add_parser('accuracy')
+loss.add_argument('History',
+                   help='History output file from the network training')
+loss.add_argument('--output', '-o',
+                   default='.',
+                   help='Where to output the plot image')
+
 args = parser.parse_args()
 
 
@@ -33,6 +48,8 @@ args = parser.parse_args()
 if(args.Metric == 'confmat'):
 
     import keras.models
+    import lib.deeplearning as dp
+    import lib.statistics   as stat
 
     data_file  = os.path.abspath(args.Data)
     label_file = os.path.abspath(args.Labels)
@@ -62,3 +79,65 @@ if(args.Metric == 'confmat'):
         ax.text(j,i, '{:0.2f}'.format(v), ha='center', va='center')
 
     plt.savefig(os.path.join(out_dir, 'confmat.png'))
+
+
+# loss plot
+elif (args.Metric == 'loss'):
+
+    history_file = os.path.abspath(args.History)
+    out_dir      = os.path.abspath(args.output)
+
+    assert os.path.exists(out_dir)
+    assert os.path.exists(history_file) \
+        and os.path.isfile(history_file) \
+        and os.path.splitext(history_file)[1] == '.json'
+
+    with open(history_file, 'r') as his:
+        data = json.load(his)
+
+        # get the loss metric
+        train_loss = data['loss']
+        val_loss   = data['val_loss']
+
+        assert len(train_loss) == len(val_loss)
+
+        # epochs for the x axis
+        x_axis = np.arange(len(train_loss), dtype=np.uint8)+1
+
+        plt.plot(x_axis, train_loss, label='loss')
+        plt.plot(x_axis, val_loss, label='validation loss')
+
+        plt.legend()
+
+        plt.savefig('loss.png')
+
+
+# accuracy plot
+elif (args.Metric == 'accuracy'):
+
+    history_file = os.path.abspath(args.History)
+    out_dir      = os.path.abspath(args.output)
+
+    assert os.path.exists(out_dir)
+    assert os.path.exists(history_file) \
+        and os.path.isfile(history_file) \
+        and os.path.splitext(history_file)[1] == '.json'
+
+    with open(history_file, 'r') as his:
+        data = json.load(his)
+
+        # get the accuracy metric
+        train_accuracy = data['acc']
+        val_accuracy   = data['val_acc']
+
+        assert len(train_accuracy) == len(val_accuracy)
+
+        # epochs for the x axis
+        x_axis = np.arange(len(train_accuracy), dtype=np.uint8)+1
+
+        plt.plot(x_axis, train_accuracy, label='accuracy')
+        plt.plot(x_axis, val_accuracy, label='validation accuracy')
+
+        plt.legend()
+
+        plt.savefig('accuracy.png')
