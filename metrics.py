@@ -1,3 +1,53 @@
+"""This script plots different metrics from the data gathered by training the networks
+
+The script takes data as input, for example the loss or accuracy timeseries and
+plots it as a graph. It can also plot the confusion matrix if the model, data
+and labels are provided
+
+The following metrics are available
+    confmat
+        Plots the confusion matrix for the given model and data/labels
+    loss
+        Plots the loss from the output provided by the Keras history object
+    accuracy
+        Plots the accuracy from the output provided by the Keras history object
+
+...
+
+Parameters
+    Metric (str):
+        Which metric shold to compute
+            confmat: confusion matrix
+            loss: loss time series for epochs
+            accuracy: accuracy time series for epochs
+
+    loss/accuracy:
+        History (str):
+            path to the history json file output by training the neural networks
+        output (str, optional):
+            path where to output the plot graphic
+            default: .
+
+    confmat:
+        Data (str):
+            data that is input to the network to predict the label for, a .npy
+            file created by the process_data.py script
+        Labels (str):
+            ground truth labels to check the predictions against to compute the
+            confusion matrix
+        Model (str):
+            model file created by keras. Has to be in .h5 format
+        validation-split (float, optional):
+            How to split the data into train and test data. Only the test data
+            is used to compute the confusion matrix. Should be the same as used
+            when training the network
+            default: 0.9
+        output (str, optional):
+            path where to output the plot graphic
+            default: .
+"""
+
+
 import argparse
 import json
 import os
@@ -25,7 +75,7 @@ confm.add_argument('--output', '-o',
                     default='.',
                     help='Where to output the confusion matrix image')
 
-
+# loss
 loss = subparser.add_parser('loss')
 loss.add_argument('History',
                    help='History output file from the network training')
@@ -34,12 +84,12 @@ loss.add_argument('--output', '-o',
                    help='Where to output the plot image')
 
 
-loss = subparser.add_parser('accuracy')
-loss.add_argument('History',
-                   help='History output file from the network training')
-loss.add_argument('--output', '-o',
-                   default='.',
-                   help='Where to output the plot image')
+accuracy = subparser.add_parser('accuracy')
+accuracy.add_argument('History',
+                       help='History output file from the network training')
+accuracy.add_argument('--output', '-o',
+                       default='.',
+                       help='Where to output the plot image')
 
 args = parser.parse_args()
 
@@ -81,8 +131,11 @@ if(args.Metric == 'confmat'):
     plt.savefig(os.path.join(out_dir, 'confmat.png'))
 
 
+
 # loss plot
-elif (args.Metric == 'loss'):
+elif (args.Metric == 'loss' or args.Metric == 'accuracy'):
+
+    import lib.plot as plot
 
     history_file = os.path.abspath(args.History)
     out_dir      = os.path.abspath(args.output)
@@ -92,52 +145,20 @@ elif (args.Metric == 'loss'):
         and os.path.isfile(history_file) \
         and os.path.splitext(history_file)[1] == '.json'
 
+    # choose the metrics according to the arguments given
+    metrics = ['loss', 'val_loss'] \
+              if args.Metric == 'loss' \
+              else ['acc', 'val_acc']
+
+    # open the history json file
     with open(history_file, 'r') as his:
         data = json.load(his)
 
-        # get the loss metric
-        train_loss = data['loss']
-        val_loss   = data['val_loss']
+        # plot the relevant metricss
+        plot.axisplot(
+            [data[met] for met in metrics],
+            metrics
+        )
 
-        assert len(train_loss) == len(val_loss)
-
-        # epochs for the x axis
-        x_axis = np.arange(len(train_loss), dtype=np.uint8)+1
-
-        plt.plot(x_axis, train_loss, label='loss')
-        plt.plot(x_axis, val_loss, label='validation loss')
-
-        plt.legend()
-
-        plt.savefig('loss.png')
-
-
-# accuracy plot
-elif (args.Metric == 'accuracy'):
-
-    history_file = os.path.abspath(args.History)
-    out_dir      = os.path.abspath(args.output)
-
-    assert os.path.exists(out_dir)
-    assert os.path.exists(history_file) \
-        and os.path.isfile(history_file) \
-        and os.path.splitext(history_file)[1] == '.json'
-
-    with open(history_file, 'r') as his:
-        data = json.load(his)
-
-        # get the accuracy metric
-        train_accuracy = data['acc']
-        val_accuracy   = data['val_acc']
-
-        assert len(train_accuracy) == len(val_accuracy)
-
-        # epochs for the x axis
-        x_axis = np.arange(len(train_accuracy), dtype=np.uint8)+1
-
-        plt.plot(x_axis, train_accuracy, label='accuracy')
-        plt.plot(x_axis, val_accuracy, label='validation accuracy')
-
-        plt.legend()
-
-        plt.savefig('accuracy.png')
+    # save the graph as an
+    plt.savefig(os.path.join(out_dir, '{}.png'.format(args.Metric)))
