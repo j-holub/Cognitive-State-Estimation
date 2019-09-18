@@ -42,11 +42,6 @@ class DataHandler:
         if(len(self.__data.shape)==4):
             self.__data = np.reshape(self.__data, (*self.__data.shape, 1))
 
-        # shuffle the data
-        permutation = np.random.permutation(self.__data.shape[0])
-        self.__data   = np.take(self.__data, permutation, axis=0)
-        self.__labels = np.take(self.__labels, permutation, axis=0)
-
         # compute the index to divide the data into training and validation set
         self.__split_index = int(self.__data.shape[0] * val_split)
 
@@ -62,7 +57,7 @@ class DataHandler:
                 arrays of the according dimensions
 
         """
-        
+
         return self.__data[:self.__split_index], self.__labels[:self.__split_index]
 
 
