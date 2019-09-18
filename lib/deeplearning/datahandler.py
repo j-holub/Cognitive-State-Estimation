@@ -71,3 +71,13 @@ class DataHandler:
         """
 
         return self.__data[self.__split_index:], self.__labels[self.__split_index:]
+
+
+    def all_data(self):
+        """Returns all the data
+
+        Returns:
+            (np.ndarray, np.ndarray): all features and labels as numpy arrays
+        """
+
+        return self.__data, self.__labels
