@@ -36,12 +36,12 @@ class DataHandler:
         # the numpy array to store all the frames in
         self.__data   = np.zeros([1, *shape], dtype=np.uint8)
         # the numpy array to hold the labels
-        self.__labels = np.zeros(1, dtype=np.uint8)
+        self.__labels = np.zeros(1, dtype=np.float64)
 
 
 
 
-    def add_frames(self, frames: np, label: int):
+    def add_frames(self, frames: np, label: float):
         """Adds frames in chunks of the windowsize to the data with the label
 
         The frames given are split into chunks of windowsize, with the last frames
@@ -93,7 +93,7 @@ class DataHandler:
 
 
 
-    def write(self, path: str, name: str):
+    def write(self, path: str, name: str, suffix: str = ''):
         """Writes the stored data to a file
 
         This method writes all the data stored so far to the output file. It
@@ -104,18 +104,21 @@ class DataHandler:
                 path to the directory where the output should be stored in
             name (str):
                 name the files should have, for example the participant number
+            suffix (str, optional):
+                some arbtrary string that is added to the file name
 
         Returns:
             str, str: output path to the data and the labels file
         """
 
         # create the filename
-        name_str = '{}_{}@{}_{}x{}'.format(
+        name_str = '{}_{}@{}_{}x{}{}'.format(
             name,
             self.__data.shape[1],
             self.__subsample,
             self.__data.shape[2],
-            self.__data.shape[2]
+            self.__data.shape[2],
+            '_{}'.format(suffix) if suffix else suffix
         )
 
         # path to the numpy files

@@ -32,6 +32,9 @@ Parameters:
     ExperimentData (str):
         path to the directory storing all the files gathered from the N-Back
         experiment
+    ground-truth (str, optional):
+        whether the n level or the score should be used as gt
+        default: 'n'
     output (str, optional):
         directory where the output should be stored in.
         default: '.'
@@ -56,24 +59,35 @@ import lib.dataprocessing as dp
 
 # Argument Parsing
 parser = argparse.ArgumentParser()
-parser.add_argument('ProcessingMethod', choices=['eye', 'face', 'opticalflow'],
+parser.add_argument('ProcessingMethod',
+                     choices=['eye', 'face', 'opticalflow'],
                      help='Which method to choose for processing the data')
 parser.add_argument('ExperimentData',
                      help='The directory that holds all the data recorded at the\
                            N-Back experiment')
-parser.add_argument('--output', '-o', default='.',
+parser.add_argument('--ground-truth', '-gt',
+                     choices=['n', 'score'],
+                     default='n',
+                     help='What should be used as the ground truth label. The n\
+                           difficulty or the score the participant achieved')
+parser.add_argument('--output', '-o',
+                     default='.',
                      help='Directory to store the output in')
-parser.add_argument('--window', '-w', default=60,
+parser.add_argument('--window', '-w',
+                     default=60,
                      help='The window size for a single input in frames')
-parser.add_argument('--crop', '-c', default=64,
+parser.add_argument('--crop', '-c',
+                     default=64,
                      help='The crop size for the frames')
-parser.add_argument('--subsample', '-s', default=1,
+parser.add_argument('--subsample', '-s',
+                     default=1,
                      help='How many frames to subsample the time series by')
 arguments = parser.parse_args()
 
 # Argument Processing
 method        = arguments.ProcessingMethod
 exp_data_path = os.path.abspath(arguments.ExperimentData)
+ground_truth  = arguments.ground_truth
 output_path   = os.path.abspath(arguments.output)
 windowsize    = int(arguments.window)
 cropsize      = int(arguments.crop)
@@ -101,6 +115,7 @@ print('')
 print('Processing Method: {}'.format(method))
 print('Experiment Data: {}'.format(exp_json))
 print('Video: {}'.format(video_path))
+print('Ground Truth: {}'.format(ground_truth))
 print('Output Path: {}'.format(output_path))
 print('Windowsize: {}'.format(windowsize))
 print('Cropsize: {}'.format(cropsize))
@@ -130,20 +145,22 @@ process_frames = method_functions[method]
 
 print("Processing N-levels...")
 # iterate over the difficulty levels 1-5
-for n in range(1,6):
+for n in range(1,2):
     print("N={}".format(n))
     # get the trial data for each difficulty level
     trials = exp_data.get_trials(n)
     # iterate over every trial
-    for i, trial in enumerate(trials):
+    for i, trial in enumerate(trials[:1]):
         print("  Trial {}".format(i+1))
         # get the face frames for the trial
         frames = process_frames(trial['start'], trial['end'], cropsize)
+        # set the ground truth
+        gt = n if ground_truth == 'n' else trial['score']
         # store the away in the data handler with the correct label
-        data_handler.add_frames(frames, n)
+        data_handler.add_frames(frames, gt)
 
 print("Writing data to disk...")
 # write the data to disk
-data_path, labels_path = data_handler.write(output_path, participant)
+data_path, labels_path = data_handler.write(output_path, participant, suffix=ground_truth)
 print("  {}".format(data_path))
 print("  {}".format(labels_path))
