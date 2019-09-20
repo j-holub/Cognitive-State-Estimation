@@ -75,7 +75,7 @@ class DataHandler:
             # add the segments to the data
             for segment in segments:
                 self.__data   = np.concatenate((self.__data, np.expand_dims(segment, axis=0)), axis=0)
-                self.__labels = np.append(self.__labels, np.expand_dims(label, axis=0))
+                self.__labels = np.append(self.__labels, np.expand_dims(ground_truth, axis=0))
 
         assert self.__data.shape[0] == self.__labels.shape[0]
 
