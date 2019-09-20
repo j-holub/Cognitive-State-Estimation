@@ -36,12 +36,12 @@ class DataHandler:
         # the numpy array to store all the frames in
         self.__data   = np.zeros([1, *shape], dtype=np.uint8)
         # the numpy array to hold the labels
-        self.__labels = np.zeros(1, dtype=np.float64)
+        self.__labels = np.zeros(1, dtype=np.uint8)
 
 
 
 
-    def add_frames(self, frames: np, label: float):
+    def add_frames(self, frames: np, ground_truth: int):
         """Adds frames in chunks of the windowsize to the data with the label
 
         The frames given are split into chunks of windowsize, with the last frames
@@ -52,8 +52,8 @@ class DataHandler:
         Parameters:
             frames (ndarray):
                 numpy array of frames
-            label (int):
-                label for the frames
+            ground_truth (int):
+                ground truth value for the frames
         """
 
         # get the windowsize

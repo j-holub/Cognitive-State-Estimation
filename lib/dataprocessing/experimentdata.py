@@ -157,7 +157,7 @@ class ExperimentData:
             trial (list): list of trial JSON objects produced by JsPsych
 
         Returns:
-            float: percentage of correct answers
+            int: number of correct answers
 
         Raises:
             AssertionError: when the number of stimuli for the trial is not 10
@@ -171,4 +171,4 @@ class ExperimentData:
         assert(len(relevant) == 10)
 
         # score is the number of correct answers divided by 10
-        return len([trial for trial in relevant if trial['correct']]) / 10
+        return len([trial for trial in relevant if trial['correct']])
