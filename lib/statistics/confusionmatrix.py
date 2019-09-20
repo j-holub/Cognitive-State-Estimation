@@ -10,4 +10,4 @@ def confusion_mat(model: keras.Model, evaluation_data: np.ndarray, evaluation_la
     # compute the confusion matrix
     mat = sklearn.metrics.confusion_matrix(evaluation_labels.argmax(axis=1), pred.argmax(axis=1))
 
-    return mat/mat.sum(axis=1)
+    return mat/mat.sum(axis=1, keepdims=True)
