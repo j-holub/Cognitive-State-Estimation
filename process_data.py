@@ -145,12 +145,12 @@ process_frames = method_functions[method]
 
 print("Processing N-levels...")
 # iterate over the difficulty levels 1-5
-for n in range(1,2):
+for n in range(1,6):
     print("N={}".format(n))
     # get the trial data for each difficulty level
     trials = exp_data.get_trials(n)
     # iterate over every trial
-    for i, trial in enumerate(trials[:1]):
+    for i, trial in enumerate(trials):
         print("  Trial {}".format(i+1))
         # get the face frames for the trial
         frames = process_frames(trial['start'], trial['end'], cropsize)
