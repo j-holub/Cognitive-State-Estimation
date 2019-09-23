@@ -4,8 +4,6 @@ import cv2
 import numpy as np
 import openface
 
-from .faceextract import FaceExtractor
-
 
 class EyeExtractor:
     """Class representing a module to extract the right eye from images
@@ -66,8 +64,8 @@ class EyeExtractor:
             center_y = int(right_eye_inner[1]+middle_y) if right_eye_inner[1] < right_eye_outer[1] else int(right_eye_outer[1]+middle_y)
 
             # extract the eye from the frame
-            eye_img = frame[center_y-middle_x*2:center_y+middle_x*2,center_x-middle_x*2:center_x+middle_x*2,...]
-
+            eye_img = frame[int(center_y-middle_x*1.5):int(center_y+middle_x*1.5),int(center_x-middle_x*1.5):int(center_x+middle_x*1.5),...]
+            
             return True, cv2.resize(eye_img, (crop, crop))
 
         # return None if no face was found in the frame
