@@ -10,6 +10,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('RawDataDir',
                      help='Directory where the frame .npy files and the ground\
                      truth .json files are stored')
+parser.add_argument('--single-person-balanced', '-spb',
+                     action='store_true',
+                     help='If this flag is set, one balanced dataset with training and \
+                           validation data for this single person will be created')
 parser.add_argument('--ground-truth', '-gt',
                      choices=['n', 'score'],
                      default='n',
@@ -25,6 +29,7 @@ parser.add_argument('--subsample', '-ss',
                      default=1,
                      help='How many frames to subsample the time series by')
 arguments = parser.parse_args()
+
 
 # Argument Processing
 exp_data_path = os.path.abspath(arguments.RawDataDir)
@@ -68,25 +73,67 @@ gt_files    = sorted([os.path.join(exp_data_path, file)
 # get the shape of a single frame
 shape = np.load(frame_files[0]).shape[1:]
 
-# initialize the data handler
-data_handler = dp.DataHandler((windowsize, *shape), subsample)
 
-# iterate over all the data
-for frames, gt in zip(frame_files, gt_files):
-    # make sure the two files belong to each other
-    assert os.path.splitext(os.path.basename(frames))[0] == os.path.splitext(os.path.basename(gt))[0]
+# data to be used in cross participant training
+if not arguments.single_person_balanced:
 
-    # open the gt file
-    with open(gt, 'r') as gt_file:
-        gt_data = json.load(gt_file)
-        # load the frames
-        frame_data = np.load(frames)
-        # add the frames to the datahandler
-        data_handler.add_frames(frame_data, gt_data[ground_truth])
+    # initialize the data handler
+    data_handler = dp.DataHandler((windowsize, *shape), subsample)
+
+    # iterate over all the data
+    for frames, gt in zip(frame_files, gt_files):
+        # make sure the two files belong to each other
+        assert os.path.splitext(os.path.basename(frames))[0] == os.path.splitext(os.path.basename(gt))[0]
+
+        # open the gt file
+        with open(gt, 'r') as gt_file:
+            gt_data = json.load(gt_file)
+            # load the frames
+            frame_data = np.load(frames)
+            # add the frames to the datahandler
+            data_handler.add_frames(frame_data, gt_data[ground_truth])
 
 
-print("Writing data to disk...")
-# write the data to disk
-data_path, labels_path = data_handler.write(output_path, participant, suffix=ground_truth)
-print("  {}".format(data_path))
-print("  {}".format(labels_path))
+    print("Writing data to disk...")
+    # write the data to disk
+    data_path, labels_path = data_handler.write(output_path, participant, suffix=ground_truth)
+    print("  {}".format(data_path))
+    print("  {}".format(labels_path))
+
+
+# ----------------- 
+
+# data to be used in single person training
+else:
+    # seperate datahandler for training and validation data
+    train_data_handler = dp.DataHandler((windowsize, *shape), subsample)
+    valid_data_handler = dp.DataHandler((windowsize, *shape), subsample)
+
+    for i, (frames, gt) in enumerate(zip(frame_files, gt_files)):
+        # make sure the two files belong to each other
+        assert os.path.splitext(os.path.basename(frames))[0] == os.path.splitext(os.path.basename(gt))[0]
+
+        # open the gt file
+        with open(gt, 'r') as gt_file:
+            gt_data = json.load(gt_file)
+            # load the frames
+            frame_data = np.load(frames)
+
+            # validation set
+            # last one of each difficulty is used for validation
+            if (i+1)%5==0:
+                valid_data_handler.add_frames(frame_data, gt_data[ground_truth])
+            # training set
+            # trials 0-3 are used for training
+            else:
+                train_data_handler.add_frames(frame_data, gt_data[ground_truth])
+
+
+    print("Writing data to disk...")
+    # write the data to disk
+    data_path, labels_path = train_data_handler.write(output_path, participant, suffix='{}_train'.format(ground_truth))
+    print("  {}".format(data_path))
+    print("  {}".format(labels_path))
+    data_path, labels_path = valid_data_handler.write(output_path, participant, suffix='{}_validation'.format(ground_truth))
+    print("  {}".format(data_path))
+    print("  {}".format(labels_path))
