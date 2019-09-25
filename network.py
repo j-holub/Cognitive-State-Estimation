@@ -11,7 +11,7 @@ import lib.deeplearning as deepl
 
 parser = argparse.ArgumentParser()
 parser.add_argument('Network',
-                     choices=['clitw', 'twoclass_clitw', 'score'],
+                     choices=['clitw'],
                      help='The neural network to use')
 parser.add_argument('TrainingFeatures',
                      help='Numpy file containing the training features')
@@ -27,6 +27,8 @@ parser.add_argument('--save-model', '-sm',
                      help='Save the keras model to the path specified')
 parser.add_argument('--save-history', '-sh',
                      help='Save the training history to the path specified')
+parser.add_argument('--suffix', '-sf',
+                     help='Suffix to add to the model and history file')
 arguments = parser.parse_args()
 
 
@@ -38,6 +40,7 @@ valid_labels_file   = os.path.abspath(arguments.ValidationLabels)
 epochs              = int(arguments.epochs)
 out_dir             = None if not arguments.save_model   else os.path.abspath(arguments.save_model)
 his_dir             = None if not arguments.save_history else os.path.abspath(arguments.save_history)
+suffix              = '' if not arguments.suffix else '{}_'.format(arguments.suffix)
 
 
 assert os.path.exists(train_features_file) \
@@ -85,14 +88,14 @@ history = net.fit(train_x,
         train_y,
         epochs=epochs,
         batch_size=5,
-        validation_data=datahandler.test_data()
+        # validation_data=datahandler.test_data()
 )
 
 # save the model if specified
 if(out_dir):
-    net.save(os.path.join(out_dir, '{}_e{}_model.h5'.format(network, epochs)))
+    net.save(os.path.join(out_dir, '{}_e{}_{}model.h5'.format(network, epochs, suffix)))
 
 # save the history if specified
 if(his_dir):
-    with open(os.path.join(his_dir, '{}_e{}_history.json'.format(network, epochs)), 'w') as his_file:
+    with open(os.path.join(his_dir, '{}_e{}_{}history.json'.format(network, epochs, suffix)), 'w') as his_file:
         json.dump(history.history, his_file)
