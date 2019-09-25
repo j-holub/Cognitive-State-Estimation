@@ -14,39 +14,49 @@ class DataHandler:
             returns features and labels for the test set
     """
 
-    def __init__(self, features_file: str, labels_file: str, val_split: float):
+
+
+    def __init__(self,
+        train_feat_file: str,
+        train_labels_file: str,
+        valid_feat_file: str,
+        valid_labels_file: str):
         """
         Parameters:
-            features_file (str):
-                path to the .npy file containing the features
-            labels_file (str):
-                path to the .npy file containing the labels
-            val_split (float):
-                ratio to split the data into train and test set. Must be in the
-                interval (0,1)
+            train_feat_file (str):
+                path to the .npy file containing the training features
+            train_labels_file (str):
+                path to the .npy file containing the training labels
+            valid_feat_file (str):
+                path to the .npy file containing the validation features
+            valid_labels_file (str):
+                path to the .npy file containing the validation labels
         """
 
-        assert val_split>0 and val_split<1
+        # load the training data
+        self.__train_data = np.load(train_feat_file, mmap_mode='r+')
+        # load the training labels and transform them to 1 hot
+        labels = np.load(train_labels_file)
+        self.__train_labels = keras.utils.to_categorical(labels)[...,1:]
 
-        # load the data
-        self.__data = np.load(features_file, mmap_mode='r+')
-        # load the labels and transform them to 1 hot
-        self.__labels = np.load(labels_file)
-        self.__labels = keras.utils.to_categorical(self.__labels)[...,1:]
+        assert self.__train_data.shape[0] == self.__train_labels.shape[0]
 
-        assert self.__data.shape[0] == self.__labels.shape[0]
+        # load the validation data
+        self.__valid_data = np.load(valid_feat_file, mmap_mode='r+')
+        # load the validation labels and transform them to 1 hot
+        labels = np.load(valid_labels_file)
+        self.__valid_labels = keras.utils.to_categorical(labels)[...,1:]
+
+        assert self.__valid_data.shape[0] == self.__valid_labels.shape[0]
 
         # transform the data if needed
         # if the dimension is (amount, window, crop crop) transform
         # it to (amount, window, crop, crop, 1)
-        if(len(self.__data.shape)==4):
-            self.__data = np.reshape(self.__data, (*self.__data.shape, 1))
+        if(len(self.__train_data.shape)==4):
+            assert self.__train_data.shape[1:] == self.__valid_data.shape[1:]
+            self.__train_data = np.reshape(self.__train_data, (*self.__train_data.shape, 1))
+            self.__valid_data = np.reshape(self.__valid_data, (*self.__valid_data.shape, 1))
 
-        # compute the index to divide the data into training and validation set
-        self.__split_index = int(self.__data.shape[0] * val_split)
-
-        # normalize the data
-        self.__data = (self.__data - np.mean(self.__data)) / np.std(self.__data)
 
 
     def train_data(self):
@@ -58,7 +68,8 @@ class DataHandler:
 
         """
 
-        return self.__data[:self.__split_index], self.__labels[:self.__split_index]
+        return self.__train_data, self.__train_labels
+
 
 
     def test_data(self):
@@ -70,14 +81,4 @@ class DataHandler:
 
         """
 
-        return self.__data[self.__split_index:], self.__labels[self.__split_index:]
-
-
-    def all_data(self):
-        """Returns all the data
-
-        Returns:
-            (np.ndarray, np.ndarray): all features and labels as numpy arrays
-        """
-
-        return self.__data, self.__labels
+        return self.__valid_data, self.__valid_labels

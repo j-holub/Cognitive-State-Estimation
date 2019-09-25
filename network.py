@@ -11,16 +11,18 @@ import lib.deeplearning as deepl
 
 parser = argparse.ArgumentParser()
 parser.add_argument('Network',
-                     choices=['clitw'],
+                     choices=['clitw', 'twoclass_clitw', 'score'],
                      help='The neural network to use')
-parser.add_argument('Features',
-                     help='Numpy file containing the features')
-parser.add_argument('Labels',
-                     help='Numpy file containing the labels')
+parser.add_argument('TrainingFeatures',
+                     help='Numpy file containing the training features')
+parser.add_argument('TrainingLabels',
+                     help='Numpy file containing the training labels')
+parser.add_argument('ValidationFeatures',
+                     help='Numpy file containing the validation features')
+parser.add_argument('ValidationLabels',
+                     help='Numpy file containing the validation labels')
 parser.add_argument('--epochs', '-e', default=10,
                      help='Number of epochs to train')
-parser.add_argument('--validation-split', '-vs', default=0.9,
-                     help='Split ratio between train and test data')
 parser.add_argument('--save-model', '-sm',
                      help='Save the keras model to the path specified')
 parser.add_argument('--save-history', '-sh',
@@ -28,37 +30,48 @@ parser.add_argument('--save-history', '-sh',
 arguments = parser.parse_args()
 
 
-network       = arguments.Network
-features_file = os.path.abspath(arguments.Features)
-labels_file   = os.path.abspath(arguments.Labels)
-epochs        = int(arguments.epochs)
-val_split     = float(arguments.validation_split)
-out_dir       = os.path.abspath(arguments.save_model)
-his_dir       = os.path.abspath(arguments.save_history)
+network             = arguments.Network
+train_features_file = os.path.abspath(arguments.TrainingFeatures)
+train_labels_file   = os.path.abspath(arguments.TrainingLabels)
+valid_features_file = os.path.abspath(arguments.ValidationFeatures)
+valid_labels_file   = os.path.abspath(arguments.ValidationLabels)
+epochs              = int(arguments.epochs)
+out_dir             = os.path.abspath(arguments.save_model)
+his_dir             = os.path.abspath(arguments.save_history)
 
-assert os.path.exists(features_file) \
-        and os.path.isfile(features_file) \
-        and os.path.splitext(features_file)[1] == '.npy'
-assert os.path.exists(labels_file) \
-        and os.path.isfile(labels_file) \
-        and os.path.splitext(labels_file)[1] == '.npy'
+assert os.path.exists(train_features_file) \
+        and os.path.isfile(train_features_file) \
+        and os.path.splitext(train_features_file)[1] == '.npy'
+assert os.path.exists(train_labels_file) \
+        and os.path.isfile(train_labels_file) \
+        and os.path.splitext(train_labels_file)[1] == '.npy'
+assert os.path.exists(valid_features_file) \
+        and os.path.isfile(valid_features_file) \
+        and os.path.splitext(valid_features_file)[1] == '.npy'
+assert os.path.exists(valid_labels_file) \
+        and os.path.isfile(valid_labels_file) \
+        and os.path.splitext(valid_labels_file)[1] == '.npy'
 assert os.path.exists(out_dir)
 assert os.path.exists(his_dir)
 assert epochs > 0
-assert val_split>0 and val_split <1
 
 # load the data into the datahandler
-datahandler = deepl.DataHandler(features_file, labels_file, val_split)
+datahandler = deepl.DataHandler(
+                train_features_file,
+                train_labels_file,
+                valid_features_file,
+                valid_labels_file
+)
 
 networks = {
-    'clitw': deepl.CLitW_network
+    'clitw': deepl.CLitW_network,
 }
 # set the network according to the input argument provided
 net = networks[network]()
 
 # compile the network
 net.compile(optimizer=optimizers.sgd(lr=0.01, momentum=0.9),
-              loss='categorical_crossentropy',
+              loss='mean_squared_error',
               metrics=['accuracy'])
 
 # get the training data from the data handler
