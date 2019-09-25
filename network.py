@@ -36,8 +36,9 @@ train_labels_file   = os.path.abspath(arguments.TrainingLabels)
 valid_features_file = os.path.abspath(arguments.ValidationFeatures)
 valid_labels_file   = os.path.abspath(arguments.ValidationLabels)
 epochs              = int(arguments.epochs)
-out_dir             = os.path.abspath(arguments.save_model)
-his_dir             = os.path.abspath(arguments.save_history)
+out_dir             = None if not arguments.save_model   else os.path.abspath(arguments.save_model)
+his_dir             = None if not arguments.save_history else os.path.abspath(arguments.save_history)
+
 
 assert os.path.exists(train_features_file) \
         and os.path.isfile(train_features_file) \
@@ -51,9 +52,12 @@ assert os.path.exists(valid_features_file) \
 assert os.path.exists(valid_labels_file) \
         and os.path.isfile(valid_labels_file) \
         and os.path.splitext(valid_labels_file)[1] == '.npy'
-assert os.path.exists(out_dir)
-assert os.path.exists(his_dir)
+if(out_dir):
+    assert os.path.exists(out_dir)
+if(his_dir):
+    assert os.path.exists(his_dir)
 assert epochs > 0
+
 
 # load the data into the datahandler
 datahandler = deepl.DataHandler(
