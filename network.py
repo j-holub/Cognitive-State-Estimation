@@ -88,7 +88,7 @@ history = net.fit(train_x,
         train_y,
         epochs=epochs,
         batch_size=5,
-        # validation_data=datahandler.test_data()
+        validation_data=datahandler.test_data()
 )
 
 # save the model if specified
