@@ -4,7 +4,7 @@ import numpy as np
 def axisplot(data: list, labels: list):
     assert len(data) == len(labels)
 
-    data_length = len(data)
+    data_length = len(data[0])
     for d in data[1:]:
         assert len(d) == data_length
 
@@ -16,5 +16,3 @@ def axisplot(data: list, labels: list):
         plt.plot(x_axis, data[i], label=labels[i])
 
     plt.legend()
-
-    
