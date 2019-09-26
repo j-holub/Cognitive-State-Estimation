@@ -11,7 +11,10 @@ import lib.deeplearning as deepl
 
 parser = argparse.ArgumentParser()
 parser.add_argument('Network',
-                     choices=['clitw'],
+                     choices=[
+                        'clitw',
+                        'twoclass_clitw'
+                     ],
                      help='The neural network to use')
 parser.add_argument('TrainingFeatures',
                      help='Numpy file containing the training features')
@@ -72,6 +75,7 @@ datahandler = deepl.DataHandler(
 
 networks = {
     'clitw': deepl.CLitW_network,
+    'twoclass_clitw': deepl.twoclass_CLitW_network
 }
 # set the network according to the input argument provided
 net = networks[network]()
