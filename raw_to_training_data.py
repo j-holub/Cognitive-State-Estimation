@@ -14,6 +14,9 @@ parser.add_argument('--single-person-balanced', '-spb',
                      action='store_true',
                      help='If this flag is set, one balanced dataset with training and \
                            validation data for this single person will be created')
+parser.add_argument('--two-class', '-tc',
+                     action='store_true',
+                     help='If set, only classes 1 and 5 will be used')
 parser.add_argument('--ground-truth', '-gt',
                      choices=['n', 'score'],
                      default='n',
@@ -37,6 +40,8 @@ ground_truth  = arguments.ground_truth
 output_path   = os.path.abspath(arguments.output)
 windowsize    = int(arguments.window)
 subsample     = int(arguments.subsample)
+spb           = arguments.single_person_balanced
+twoclass      = arguments.two_class
 
 # Assertion Checks
 assert os.path.exists(exp_data_path) and os.path.isdir(exp_data_path)
@@ -54,6 +59,8 @@ print('Output Path: {}'.format(output_path))
 print('Windowsize: {}'.format(windowsize))
 print('Subsampling: {}'.format(subsample))
 print('Participant: {}'.format(participant))
+print('Single Person Balanced: {}'.format(spb))
+print('Two Class: {}'.format(twoclass))
 print('')
 
 # list all the files containing the frames
@@ -73,9 +80,28 @@ gt_files    = sorted([os.path.join(exp_data_path, file)
 # get the shape of a single frame
 shape = np.load(frame_files[0]).shape[1:]
 
+# suffix to add to the output files
+suffix = ground_truth
+
+# remove classes 2-3 if twoclass is set
+if twoclass:
+    frame_files = [file
+                    for file
+                    in frame_files
+                    if os.path.basename(file)[0] == '1'
+                    or os.path.basename(file)[0] == '5'
+                  ]
+    gt_files = [file
+                    for file
+                    in gt_files
+                    if os.path.basename(file)[0] == '1'
+                    or os.path.basename(file)[0] == '5'
+                  ]
+    suffix = suffix + '_twoclass'
+
 
 # data to be used in cross participant training
-if not arguments.single_person_balanced:
+if not spb:
 
     # initialize the data handler
     data_handler = dp.DataHandler((windowsize, *shape), subsample)
@@ -96,12 +122,12 @@ if not arguments.single_person_balanced:
 
     print("Writing data to disk...")
     # write the data to disk
-    data_path, labels_path = data_handler.write(output_path, participant, suffix=ground_truth)
+    data_path, labels_path = data_handler.write(output_path, participant, suffix=suffix)
     print("  {}".format(data_path))
     print("  {}".format(labels_path))
 
 
-# ----------------- 
+# -----------------
 
 # data to be used in single person training
 else:
@@ -119,21 +145,30 @@ else:
             # load the frames
             frame_data = np.load(frames)
 
+            # load the ground truth data from the json file
+            # if the ground truth metric is n and the two class option
+            # is set, class 5 should be labeled with 2 for the one hot
+            # encoding returned by keras.utils.to_categorical
+            gt = 2 if ground_truth == 'n' \
+                    and gt_data[ground_truth] == 5 \
+                    and twoclass \
+                   else gt_data[ground_truth]
+
             # validation set
             # last one of each difficulty is used for validation
             if (i+1)%5==0:
-                valid_data_handler.add_frames(frame_data, gt_data[ground_truth])
+                valid_data_handler.add_frames(frame_data, gt)
             # training set
             # trials 0-3 are used for training
             else:
-                train_data_handler.add_frames(frame_data, gt_data[ground_truth])
+                train_data_handler.add_frames(frame_data, gt)
 
 
     print("Writing data to disk...")
     # write the data to disk
-    data_path, labels_path = train_data_handler.write(output_path, participant, suffix='{}_train'.format(ground_truth))
+    data_path, labels_path = train_data_handler.write(output_path, participant, suffix='{}_train'.format(suffix))
     print("  {}".format(data_path))
     print("  {}".format(labels_path))
-    data_path, labels_path = valid_data_handler.write(output_path, participant, suffix='{}_validation'.format(ground_truth))
+    data_path, labels_path = valid_data_handler.write(output_path, participant, suffix='{}_validation'.format(suffix))
     print("  {}".format(data_path))
     print("  {}".format(labels_path))
