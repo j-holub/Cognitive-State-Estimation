@@ -22,3 +22,4 @@ from .datahandler import DataHandler
 # networks
 from .cognitiveloadinthewild import CLitW_network
 from .two_class_conv3d_timeseries_network import twoclass_CLitW_network
+from .score_regression import score_regression_network

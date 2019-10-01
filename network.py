@@ -13,7 +13,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('Network',
                      choices=[
                         'clitw',
-                        'twoclass_clitw'
+                        'twoclass_clitw',
+                        'score'
                      ],
                      help='The neural network to use')
 parser.add_argument('TrainingFeatures',
@@ -70,12 +71,14 @@ datahandler = deepl.DataHandler(
                 train_features_file,
                 train_labels_file,
                 valid_features_file,
-                valid_labels_file
+                valid_labels_file,
+                regression=False if network == 'score' else True
 )
 
 networks = {
     'clitw': deepl.CLitW_network,
-    'twoclass_clitw': deepl.twoclass_CLitW_network
+    'twoclass_clitw': deepl.twoclass_CLitW_network,
+    'score': deepl.score_regression_network
 }
 # set the network according to the input argument provided
 net = networks[network]()
