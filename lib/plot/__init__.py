@@ -12,6 +12,6 @@ Functions:
 """
 
 from .axisplot import axisplot
-
+from .barchart import barchart
 
 from .resultshandler import ResultsHandler
