@@ -12,3 +12,6 @@ Functions:
 """
 
 from .axisplot import axisplot
+
+
+from .resultshandler import ResultsHandler
