@@ -91,6 +91,27 @@ accuracy.add_argument('--output', '-o',
                        default='.',
                        help='Where to output the plot image')
 
+
+barchart = subparser.add_parser('metric_compare')
+barchart.add_argument('HistoryFiles',
+                       nargs='+')
+barchart.add_argument('--metrics', '-m',
+                       nargs='+',
+                       choices=[
+                        'acc',
+                        'val_acc',
+                        'loss',
+                        'val_loss'
+                       ],
+                       default=['acc', 'val_acc'],
+                       help='The metrics that should be displayed in the grouped barchart')
+barchart.add_argument('--axisname', '-ax',
+                       default=['Accuracy'],
+                       help='The name for the Y Axis')
+barchart.add_argument('--output','-o',
+                       default='.',
+                       help='Where to output the plot image')
+
 args = parser.parse_args()
 
 
@@ -134,7 +155,6 @@ if(args.Metric == 'confmat'):
 
 # loss plot
 elif (args.Metric == 'loss' or args.Metric == 'accuracy'):
-
     import lib.plot as plot
 
     history_file = os.path.abspath(args.History)
@@ -162,3 +182,35 @@ elif (args.Metric == 'loss' or args.Metric == 'accuracy'):
 
     # save the graph as an
     plt.savefig(os.path.join(out_dir, '{}.png'.format(args.Metric)))
+
+# barchart
+elif(args.Metric == 'metric_compare'):
+
+    assert os.path.exists(args.output) and os.path.isdir(args.output)
+
+    import lib.plot as plot
+
+    results_files = [os.path.abspath(file) for file in args.HistoryFiles]
+
+    resh = plot.ResultsHandler()
+
+    for res_file in results_files:
+        resh.add_result_file(res_file)
+
+    metrics = {}
+    for met in args.metrics:
+        metrics[met] = list(resh.get_metric(met).values())
+
+    persons = resh.get_persons()
+
+    plot.barchart(
+        persons,
+        [values for values in metrics.values()],
+        [met for met in metrics.keys()],
+        args.axisname
+    )
+
+    out_file_name = '{}_barchart.png'.format('_'.join(args.metrics))
+
+    # save the graph as an
+    plt.savefig(os.path.join(args.output, out_file_name))

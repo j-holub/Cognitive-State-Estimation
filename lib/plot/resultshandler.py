@@ -29,21 +29,23 @@ class ResultsHandler:
         match = re.search('p\d\d', filename)
         return match.group()
 
+    def get_persons(self):
+        return self.__results.keys()
 
     def get_test_acc(self):
-        return self.__get_metric('acc')
+        return self.get_metric('acc')
 
     def get_val_acc(self):
-        return self.__get_metric('val_acc')
+        return self.get_metric('val_acc')
 
     def get_test_loss(self):
-        return self.__get_metric('loss')
+        return self.get_metric('loss')
 
     def get_val_loss(self):
-        return self.__get_metric('val_loss')
+        return self.get_metric('val_loss')
 
 
-    def __get_metric(self, metric):
+    def get_metric(self, metric):
         assert metric in ['acc', 'loss', 'val_acc', 'val_loss']
 
         met = {}
