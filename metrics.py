@@ -92,10 +92,10 @@ accuracy.add_argument('--output', '-o',
                        help='Where to output the plot image')
 
 
-barchart = subparser.add_parser('metric_compare')
-barchart.add_argument('HistoryFiles',
+metric_compare = subparser.add_parser('metric_compare')
+metric_compare.add_argument('HistoryFiles',
                        nargs='+')
-barchart.add_argument('--metrics', '-m',
+metric_compare.add_argument('--metrics', '-m',
                        nargs='+',
                        choices=[
                         'acc',
@@ -105,10 +105,10 @@ barchart.add_argument('--metrics', '-m',
                        ],
                        default=['acc', 'val_acc'],
                        help='The metrics that should be displayed in the grouped barchart')
-barchart.add_argument('--axisname', '-ax',
+metric_compare.add_argument('--axisname', '-ax',
                        default='Accuracy',
                        help='The name for the Y Axis')
-barchart.add_argument('--output','-o',
+metric_compare.add_argument('--output','-o',
                        default='.',
                        help='Where to output the plot image')
 
