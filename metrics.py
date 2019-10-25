@@ -106,11 +106,31 @@ barchart.add_argument('--metrics', '-m',
                        default=['acc', 'val_acc'],
                        help='The metrics that should be displayed in the grouped barchart')
 barchart.add_argument('--axisname', '-ax',
-                       default=['Accuracy'],
+                       default='Accuracy',
                        help='The name for the Y Axis')
 barchart.add_argument('--output','-o',
                        default='.',
                        help='Where to output the plot image')
+
+
+
+approach_compare = subparser.add_parser('approach_compare')
+approach_compare.add_argument('--face', '-f',
+                               nargs='+',
+                               help='Result files for the face approach')
+approach_compare.add_argument('--eye', '-e',
+                               nargs='+',
+                               help='Result files for the eye approach')
+approach_compare.add_argument('--metric', '-m',
+                               default='acc',
+                               choices=['acc', 'val_acc', 'loss', 'val_loss'],
+                               help='The metric that should be compared')
+approach_compare.add_argument('--axisname', '-ax',
+                               default='Accuracy',
+                               help='The name for the Y Axis')
+approach_compare.add_argument('--output','-o',
+                               default='.',
+                               help='Where to output the plot image')
 
 args = parser.parse_args()
 
@@ -211,6 +231,45 @@ elif(args.Metric == 'metric_compare'):
     )
 
     out_file_name = '{}_barchart.png'.format('_'.join(args.metrics))
+
+    # save the graph as an
+    plt.savefig(os.path.join(args.output, out_file_name))
+
+
+
+elif(args.Metric == 'approach_compare'):
+
+    assert os.path.exists(args.output) and os.path.isdir(args.output)
+
+    import lib.plot as plot
+
+    result_handlers = {}
+
+    # result files for the face approach
+    if(args.face):
+        result_handlers['face'] = plot.ResultsHandler()
+        for face_result_file in args.face:
+            result_handlers['face'].add_result_file(face_result_file)
+
+    # result files for the eye approach
+    if(args.eye):
+        result_handlers['eye'] = plot.ResultsHandler()
+        for eye_result_file in args.eye:
+            result_handlers['eye'].add_result_file(eye_result_file)
+
+    data = [list(resh.get_metric(args.metric).values()) for resh in result_handlers.values()]
+    data_labels = list(result_handlers.keys())
+    labels = list(result_handlers.values())[0].get_persons()
+
+
+    plot.barchart(
+        labels,
+        data,
+        data_labels,
+        args.axisname
+    )
+
+    out_file_name = '{}_{}_barchart.png'.format('_'.join(data_labels), args.axisname)
 
     # save the graph as an
     plt.savefig(os.path.join(args.output, out_file_name))

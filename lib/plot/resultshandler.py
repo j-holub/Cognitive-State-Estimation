@@ -30,7 +30,7 @@ class ResultsHandler:
         return match.group()
 
     def get_persons(self):
-        return self.__results.keys()
+        return list(self.__results.keys())
 
     def get_test_acc(self):
         return self.get_metric('acc')
