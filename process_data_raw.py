@@ -21,6 +21,10 @@ parser.add_argument('--output', '-o',
 parser.add_argument('--crop', '-c',
                      default=64,
                      help='The crop size for the frames')
+parser.add_argument('--lecture-video', '-lv',
+                     default=False,
+                     action='store_true',
+                     help='If set the frames for the lecture video are extracted')
 arguments = parser.parse_args()
 
 
@@ -29,6 +33,7 @@ method        = arguments.ProcessingMethod
 exp_data_path = os.path.abspath(arguments.ExperimentData)
 output_path   = os.path.abspath(arguments.output)
 cropsize      = int(arguments.crop)
+lecture_video = arguments.lecture_video
 
 
 # Assertion Checks
@@ -53,6 +58,7 @@ print('Video: {}'.format(video_path))
 print('Output Path: {}'.format(output_path))
 print('Cropsize: {}'.format(cropsize))
 print('Participant: {}'.format(participant))
+print('Video Part: {}'.format('Lecture Video' if lecture_video else 'N-Back'))
 print('')
 
 # create the data processing objects
@@ -69,28 +75,42 @@ process_frames = method_functions[method]
 # create the output directory for this participant
 os.makedirs(os.path.join(output_path, participant), exist_ok=True)
 
-print('Processing N-levels...')
-# go over every difficulty level
-for n in range(1,6):
-    print('N={}'.format(n))
-    # get the trial timestampts and score
-    trials = exp_data.get_trials(n)
+if not lecture_video:
 
-    # iterate over every trial for this difficulty
-    for i, trial in enumerate(trials):
-        print('  Trial {}'.format(i+1))
-        # get the frames
-        frames = process_frames(trial['start'], trial['end'], cropsize)
+    print('Processing N-levels...')
+    # go over every difficulty level
+    for n in range(1,6):
+        print('N={}'.format(n))
+        # get the trial timestampts and score
+        trials = exp_data.get_trials(n)
 
-        # format the output path and filename
-        out = os.path.join(output_path, participant, '{}-{}-{}'.format(n,i, method))
-        # save the frames
-        np.save('{}.npy'.format(out), frames)
-        # save the gt data as a json file
-        with open('{}.json'.format(out), 'w') as json_file:
-            json.dump({
-                'n': n,
-                'score': trial['score']
-            }, json_file)
+        # iterate over every trial for this difficulty
+        for i, trial in enumerate(trials):
+            print('  Trial {}'.format(i+1))
+            # get the frames
+            frames = process_frames(trial['start'], trial['end'], cropsize)
+
+            # format the output path and filename
+            out = os.path.join(output_path, participant, '{}-{}-{}'.format(n,i, method))
+            # save the frames
+            np.save('{}.npy'.format(out), frames)
+            # save the gt data as a json file
+            with open('{}.json'.format(out), 'w') as json_file:
+                json.dump({
+                    'n': n,
+                    'score': trial['score']
+                }, json_file)
+
+else:
+
+    print('Processing Lecture Video')
+
+    # get the timestamps for the lecture video
+    start, end = exp_data.get_video_lecture_timestamps()
+    # process the frames
+    frames = process_frames(start, end, cropsize)
+    # format the output path and filename
+    out = os.path.join(output_path, participant, '{}_lecture_video'.format(method))
+    np.sace('{}.npy'.format(out), frames)
 
 print('Output written to {}'.format(os.path.join(output_path, participant)))
