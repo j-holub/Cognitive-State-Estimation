@@ -175,6 +175,7 @@ if(args.Metric == 'confmat'):
 
 # loss plot
 elif (args.Metric == 'loss' or args.Metric == 'accuracy'):
+    import re
     import lib.plot as plot
 
     history_file = os.path.abspath(args.History)
@@ -200,8 +201,10 @@ elif (args.Metric == 'loss' or args.Metric == 'accuracy'):
             metrics
         )
 
+    # get the participant's indentifier from the history file
+    p = match = re.search('p\d\d', history_file).group()
     # save the graph as an
-    plt.savefig(os.path.join(out_dir, '{}.png'.format(args.Metric)))
+    plt.savefig(os.path.join(out_dir, '{}_{}.png'.format(p, args.Metric)))
 
 # barchart
 elif(args.Metric == 'metric_compare'):
