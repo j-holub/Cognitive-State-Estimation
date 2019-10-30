@@ -111,6 +111,6 @@ else:
     frames = process_frames(start, end, cropsize)
     # format the output path and filename
     out = os.path.join(output_path, participant, '{}_lecture_video'.format(method))
-    np.sace('{}.npy'.format(out), frames)
+    np.save('{}.npy'.format(out), frames)
 
 print('Output written to {}'.format(os.path.join(output_path, participant)))
