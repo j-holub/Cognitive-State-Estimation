@@ -104,7 +104,7 @@ if twoclass:
 if not spb:
 
     # initialize the data handler
-    data_handler = dp.DataHandler((windowsize, *shape), subsample)
+    data_handler = dp.DataHandler((windowsize, *shape, 1), subsample)
 
     # iterate over all the data
     for frames, gt in zip(frame_files, gt_files):

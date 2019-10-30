@@ -74,6 +74,9 @@ class DataHandler:
 
             # add the segments to the data
             for segment in segments:
+                # reshape to the right dimension if needed
+                segment  = np.reshape(segment, self.__data.shape[1:])
+
                 self.__data   = np.concatenate((self.__data, np.expand_dims(segment, axis=0)), axis=0)
                 self.__labels = np.append(self.__labels, np.expand_dims(ground_truth, axis=0))
 
