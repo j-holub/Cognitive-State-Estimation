@@ -51,4 +51,4 @@ out = os.path.join(args.output,
         else 'p{}_lecture_video_predictions.npy'.format(args.participant))
 
 print('Saving predictions to {}..'.format(out))
-np.save(out, np.argmax(predictions, axis=1)+1)
+np.save(out, predictions)
