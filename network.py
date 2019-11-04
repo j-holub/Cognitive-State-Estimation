@@ -72,7 +72,7 @@ datahandler = deepl.DataHandler(
                 train_labels_file,
                 valid_features_file,
                 valid_labels_file,
-                regression=False if network == 'score' else True
+                regression=True if network == 'score' else False
 )
 
 networks = {

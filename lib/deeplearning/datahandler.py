@@ -43,7 +43,7 @@ class DataHandler:
         # load the training labels and transform them to 1 hot
         labels = np.load(train_labels_file)
         self.__train_labels = labels \
-                                if not regression \
+                                if regression \
                                 else keras.utils.to_categorical(labels)[...,1:]
 
         assert self.__train_data.shape[0] == self.__train_labels.shape[0]
@@ -53,7 +53,7 @@ class DataHandler:
         # load the validation labels and transform them to 1 hot
         labels = np.load(valid_labels_file)
         self.__valid_labels = labels \
-                                if not regression \
+                                if regression \
                                 else keras.utils.to_categorical(labels)[...,1:]
 
         assert self.__valid_data.shape[0] == self.__valid_labels.shape[0]
