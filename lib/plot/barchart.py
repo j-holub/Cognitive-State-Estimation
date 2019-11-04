@@ -3,6 +3,8 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
+from .util import colours, clean_plot
+
 def barchart(
         labels: list,
         data: list,
@@ -21,6 +23,19 @@ def barchart(
     # create the plot
     fig, ax = plt.subplots()
 
+    # clean plot styling
+    clean_plot(ax)
+
+
+    for y in np.arange(0, 1, 0.1):
+        plt.plot(x, [y] * len(x), "--", lw=0.5, color="black", alpha=0.3)
+
+    plt.tick_params(bottom=True, left=False, top=False, right=False)
+    plt.xticks(x, fontsize=8)
+    plt.yticks(np.arange(0.2,1,0.2), fontsize=10)
+    plt.ylim(0,1)
+
+
 
     # calculate the spacing for the bars
     if len(data) % 2 == 0:
@@ -32,16 +47,13 @@ def barchart(
 
 
     # plot the bars on the correct positions
-    for d, lbl, offs in zip(data, data_label, bar_offset):
-        ax.bar(x+offs, d, width, label=lbl)
+    for i, (d, lbl, offs) in enumerate(zip(data, data_label, bar_offset)):
+        ax.bar(x+offs, d, width, label=lbl, color=colours()[i])
 
 
     # set some options on the axis
-    ax.autoscale(enable=True)
-    ax.set_ylabel(y_label)
-    ax.set_xticks(x)
     ax.set_xticklabels(labels)
-    ax.legend()
+    ax.legend(loc='upper right')
 
     # rotate the labels
     fig.autofmt_xdate()
