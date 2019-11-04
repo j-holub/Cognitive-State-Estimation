@@ -193,14 +193,14 @@ elif (args.Metric == 'loss' or args.Metric == 'accuracy'):
 
         # plot the relevant metricss
         if(args.Metric == 'loss'):
-            plot.axisplot(
+            plot.loss_axisplot(
                 [data['loss'], data['val_loss']],
-                ['Training Loss', 'Validation Loss'],
+                ['Training', 'Validation'],
             )
         else:
             plot.accuracy_axisplot(
                 [data['acc'], data['val_acc']],
-                ['Training Accuracy', 'Validation Accuracy']
+                ['Training', 'Validation']
             )
 
     # get the participant's indentifier from the history file

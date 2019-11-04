@@ -3,33 +3,49 @@ import numpy as np
 
 from .util import colours, clean_plot
 
-def axisplot(data: list, labels: list):
+
+def loss_axisplot(data: list, labels: list):
     assert len(data) == len(labels)
 
     fig, ax = plt.subplots()
 
     clean_plot(ax)
 
-    data_length = len(data[0])
-    for d in data[1:]:
-        assert len(d) == data_length
+    plt.xlabel('Epochs', fontsize=12)
+    plt.ylabel('Loss', fontsize=12)
 
     # epochs on the x axis
-    x_axis = np.arange(len(data[0]), dtype=np.uint8)+1
+    x_axis = np.arange(len(data[0]))+1
 
     # add every data entry with the respective label
     for i in range(len(data)):
-        plt.plot(x_axis, data[i], label=labels[i], color=colours()[i])
+        plt.plot(x_axis, data[i], label=labels[i], color=colours()[i+2])
 
-    plt.legend()
+    loc, _ = plt.yticks()
+
+    for y in loc[1:-1]:
+        plt.plot(
+            np.arange(len(data[0]))+1,
+            [y] * len(data[0]),
+            "--",
+            lw=0.5,
+            color="black",
+            alpha=0.3
+        )
+
+    plt.legend(loc='upper right')
 
 
 
 def accuracy_axisplot(data: list, labels: list):
     assert len(data) == len(labels)
 
-    # standard axis plot
-    axisplot(data, labels)
+    fig, ax = plt.subplots()
+
+    clean_plot(ax)
+
+    # epochs on the x axis
+    x_axis = np.arange(len(data[0]))+1
 
     # add the horizontal dashed lines
     for y in np.arange(0, 1, 0.1):
@@ -51,6 +67,11 @@ def accuracy_axisplot(data: list, labels: list):
     plt.xlabel('Epochs', fontsize=12)
     plt.ylabel('Accuracy', fontsize=12)
 
+    # add every data entry with the respective label
+    for i in range(len(data)):
+        plt.plot(x_axis, data[i], label=labels[i], color=colours()[i])
+
+    plt.legend(loc='upper right')
 
 
 def single_axisplot(data: np.array, x_axis: np.array):

@@ -11,7 +11,7 @@ Functions:
         Plots every pair of data and label into one single plot.
 """
 
-from .axisplot import axisplot
+from .axisplot import loss_axisplot
 from .axisplot import accuracy_axisplot
 from .axisplot import single_axisplot
 from .barchart import barchart
