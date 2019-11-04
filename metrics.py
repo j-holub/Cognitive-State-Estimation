@@ -186,20 +186,22 @@ elif (args.Metric == 'loss' or args.Metric == 'accuracy'):
         and os.path.isfile(history_file) \
         and os.path.splitext(history_file)[1] == '.json'
 
-    # choose the metrics according to the arguments given
-    metrics = ['loss', 'val_loss'] \
-              if args.Metric == 'loss' \
-              else ['acc', 'val_acc']
 
     # open the history json file
     with open(history_file, 'r') as his:
         data = json.load(his)
 
         # plot the relevant metricss
-        plot.axisplot(
-            [data[met] for met in metrics],
-            metrics
-        )
+        if(args.Metric == 'loss'):
+            plot.axisplot(
+                [data['loss'], data['val_loss']],
+                ['Training Loss', 'Validation Loss'],
+            )
+        else:
+            plot.accuracy_axisplot(
+                [data['acc'], data['val_acc']],
+                ['Training Accuracy', 'Validation Accuracy']
+            )
 
     # get the participant's indentifier from the history file
     p = match = re.search('p\d\d', history_file).group()

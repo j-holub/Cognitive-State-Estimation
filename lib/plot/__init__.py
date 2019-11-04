@@ -12,6 +12,8 @@ Functions:
 """
 
 from .axisplot import axisplot
+from .axisplot import accuracy_axisplot
+from .axisplot import single_axisplot
 from .barchart import barchart
 
 from .resultshandler import ResultsHandler
