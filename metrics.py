@@ -132,6 +132,19 @@ approach_compare.add_argument('--output','-o',
                                default='.',
                                help='Where to output the plot image')
 
+
+
+acc_distribution = subparser.add_parser('acc_dist')
+acc_distribution.add_argument('HistoryFiles',
+                               nargs='+',
+                               help='The history files output by the training')
+acc_distribution.add_argument('--metric', '-m',
+                               default='acc',
+                               choices=['acc', 'val_acc'],
+                               help='The metric that should be compared')
+acc_distribution.add_argument('--output','-o',
+                               default='.',
+                               help='Where to output the plot image')
 args = parser.parse_args()
 
 
@@ -276,5 +289,27 @@ elif(args.Metric == 'approach_compare'):
 
     out_file_name = '{}_{}_barchart.png'.format('_'.join(data_labels), args.axisname)
 
+    # save the graph as an
+    plt.savefig(os.path.join(args.output, out_file_name))
+
+
+
+elif (args.Metric == 'acc_dist'):
+
+    assert os.path.exists(args.output) and os.path.isdir(args.output)
+
+    import lib.plot as plot
+
+    resh = plot.ResultsHandler()
+
+    for his in args.HistoryFiles:
+        resh.add_result_file(his)
+
+    result = np.array(list(resh.get_metric(args.metric).values()))
+
+    plot.acc_distribution_plot([result], ['Face'])
+
+
+    out_file_name = '{}_distribution.png'.format(args.metric)
     # save the graph as an
     plt.savefig(os.path.join(args.output, out_file_name))

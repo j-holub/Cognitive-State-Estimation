@@ -13,6 +13,7 @@ Functions:
 
 from .axisplot import loss_axisplot
 from .axisplot import accuracy_axisplot
+from .axisplot import acc_distribution_plot
 from .axisplot import single_axisplot
 from .barchart import barchart
 
