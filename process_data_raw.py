@@ -10,7 +10,7 @@ import lib.dataprocessing as dp
 # Argument Parsing
 parser = argparse.ArgumentParser()
 parser.add_argument('ProcessingMethod',
-                     choices=['eye', 'face'],
+                     choices=['eye', 'face', 'opticalflow'],
                      help='Which method to choose for processing the data')
 parser.add_argument('ExperimentData',
                      help='The directory that holds all the data recorded at the\
@@ -69,6 +69,7 @@ video_handler = dp.VideoHandler(video_path)
 method_functions = {
     'face': video_handler.get_frames,
     'eye': video_handler.get_eye_frames,
+    'opticalflow': video_handler.get_optical_flow_frames
 }
 process_frames = method_functions[method]
 
