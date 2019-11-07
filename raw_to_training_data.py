@@ -132,8 +132,8 @@ if not spb:
 # data to be used in single person training
 else:
     # seperate datahandler for training and validation data
-    train_data_handler = dp.DataHandler((windowsize, *shape), subsample)
-    valid_data_handler = dp.DataHandler((windowsize, *shape), subsample)
+    train_data_handler = dp.DataHandler((windowsize, *shape, 1), subsample)
+    valid_data_handler = dp.DataHandler((windowsize, *shape, 1), subsample)
 
     for i, (frames, gt) in enumerate(zip(frame_files, gt_files)):
         # make sure the two files belong to each other
