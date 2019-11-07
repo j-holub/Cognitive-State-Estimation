@@ -92,10 +92,13 @@ net.compile(optimizer=optimizers.sgd(lr=0.01, momentum=0.9),
               loss='mean_squared_error',
               metrics=['accuracy'])
 
+# date when the session was started
+session_start = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 
+# model with the best accuracy on the training set
 best_acc_path = os.path.join(out_dir, '{}_bestacc_{}_{}_model.h5'.format(
                     network,
-                    datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S"),
+                    session_start,
                     suffix)
                 )
 best_acc_checkpoint = ModelCheckpoint(best_acc_path,
@@ -104,9 +107,11 @@ best_acc_checkpoint = ModelCheckpoint(best_acc_path,
                     save_best_only=True,
                     mode='max'
                     )
+
+# model with the best accuracy on the validation set
 best_valacc_path = os.path.join(out_dir, '{}_bestvalacc_{}_{}_model.h5'.format(
                       network,
-                      datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S"),
+                      session_start,
                       suffix)
                    )
 best_valacc_checkpoint = ModelCheckpoint(best_valacc_path,
@@ -131,5 +136,5 @@ history = net.fit(train_x,
 )
 
 # save the history if specified
-with open(os.path.join(his_dir, '{}_e{}_{}history.json'.format(network, epochs, suffix)), 'w') as his_file:
+with open(os.path.join(his_dir, '{}_e{}_{}_{}history.json'.format(network, epochs, session_start, suffix)), 'w') as his_file:
     json.dump(history.history, his_file)
