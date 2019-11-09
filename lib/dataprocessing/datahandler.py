@@ -67,18 +67,21 @@ class DataHandler:
             diff = subsampled_frames.shape[0] % windowsize
             # get the number of chunks
             chunks = math.floor(subsampled_frames.shape[0] / windowsize)
-            # split the frames into segments of windowsize
-            segments = np.split(subsampled_frames[:-diff,...], chunks, axis=0) \
-                if diff > 0 \
-                else np.split(subsampled_frames, chunks, axis=0)
 
-            # add the segments to the data
-            for segment in segments:
-                # reshape to the right dimension if needed
-                segment  = np.reshape(segment, self.__data.shape[1:])
+            # if chunk is 0 there aren't even enough frames to fill one window
+            if chunks > 0:
+                # split the frames into segments of windowsize
+                segments = np.split(subsampled_frames[:-diff,...], chunks, axis=0) \
+                    if diff > 0 \
+                    else np.split(subsampled_frames, chunks, axis=0)
 
-                self.__data   = np.concatenate((self.__data, np.expand_dims(segment, axis=0)), axis=0)
-                self.__labels = np.append(self.__labels, np.expand_dims(ground_truth, axis=0))
+                # add the segments to the data
+                for segment in segments:
+                    # reshape to the right dimension if needed
+                    segment  = np.reshape(segment, self.__data.shape[1:])
+
+                    self.__data   = np.concatenate((self.__data, np.expand_dims(segment, axis=0)), axis=0)
+                    self.__labels = np.append(self.__labels, np.expand_dims(ground_truth, axis=0))
 
         assert self.__data.shape[0] == self.__labels.shape[0]
 
