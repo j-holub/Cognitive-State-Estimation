@@ -22,7 +22,7 @@ import argparse
 import json
 import os
 
-import lib.dataprocessing as dp
+import lib.statistics as statistic
 
 
 parser = argparse.ArgumentParser()
@@ -49,7 +49,7 @@ assert all([
 assert os.path.splitext(out_file)[1] == '.json'
 
 # statistic object
-stat = dp.Statistic()
+stat = statistic.Statistic()
 
 # add all the data from the experiments
 for data in exp_data_files:
@@ -71,6 +71,9 @@ for i in range(average_subject_scores.shape[0]):
 statistics['global_average'] = global_average_scores.tolist()
 # standard deviation
 statistics['std_deviation'] = global_std_deviation.tolist()
+# global score count
+statistics['score_count'] = stat.global_score_count().tolist()
+
 
 # write the output as json
 with open(out_file, 'w') as out:
