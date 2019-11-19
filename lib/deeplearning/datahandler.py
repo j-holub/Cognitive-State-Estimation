@@ -58,14 +58,6 @@ class DataHandler:
 
         assert self.__valid_data.shape[0] == self.__valid_labels.shape[0]
 
-        # transform the data if needed
-        # if the dimension is (amount, window, crop crop) transform
-        # it to (amount, window, crop, crop, 1)
-        if(len(self.__train_data.shape)==4):
-            assert self.__train_data.shape[1:] == self.__valid_data.shape[1:]
-            self.__train_data = np.reshape(self.__train_data, (*self.__train_data.shape, 1))
-            self.__valid_data = np.reshape(self.__valid_data, (*self.__valid_data.shape, 1))
-
         # normalisation
         self.__train_data = (self.__train_data - np.mean(self.__train_data)) / np.std(self.__train_data)
         self.__valid_data = (self.__valid_data - np.mean(self.__valid_data)) / np.std(self.__valid_data)
