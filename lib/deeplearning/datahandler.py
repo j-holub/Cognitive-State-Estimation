@@ -66,6 +66,10 @@ class DataHandler:
             self.__train_data = np.reshape(self.__train_data, (*self.__train_data.shape, 1))
             self.__valid_data = np.reshape(self.__valid_data, (*self.__valid_data.shape, 1))
 
+        # normalisation
+        self.__train_data = (self.__train_data - np.mean(self.__train_data)) / np.std(self.__train_data)
+        self.__valid_data = (self.__valid_data - np.mean(self.__valid_data)) / np.std(self.__valid_data)
+
 
 
     def train_data(self):
