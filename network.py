@@ -102,7 +102,7 @@ best_acc_path = os.path.join(out_dir, '{}_bestacc_{}_{}_model.h5'.format(
                     suffix)
                 )
 best_acc_checkpoint = ModelCheckpoint(best_acc_path,
-                    monitor='acc',
+                    monitor='accuracy',
                     verbose=1,
                     save_best_only=True,
                     mode='max'
@@ -115,7 +115,7 @@ best_valacc_path = os.path.join(out_dir, '{}_bestvalacc_{}_{}_model.h5'.format(
                       suffix)
                    )
 best_valacc_checkpoint = ModelCheckpoint(best_valacc_path,
-                       monitor='val_acc',
+                       monitor='val_accuracy',
                        verbose=1,
                        save_best_only=True,
                        mode='max'
