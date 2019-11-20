@@ -16,6 +16,7 @@ parser.add_argument('Network',
                      choices=[
                         'clitw',
                         'score',
+                        'opticalflow',
                         'twoclass_clitw'
                      ],
                      help='The neural network to use')
@@ -81,6 +82,7 @@ datahandler = deepl.DataHandler(
 
 networks = {
     'clitw': deepl.CLitW_network,
+    'opticalflow': deepl.of_network,
     'twoclass_clitw': deepl.twoclass_CLitW_network,
     'score': deepl.score_regression_network
 }
