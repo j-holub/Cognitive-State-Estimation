@@ -137,6 +137,11 @@ history = net.fit(train_x,
         callbacks=callbacks_list
 )
 
+# transform the history object to floats to make it JSON serialisable
+output = history.history
+for key in output.keys():
+    output[key] = [float(x) for x in output[key]]
+
 # save the history if specified
 with open(os.path.join(his_dir, '{}_e{}_{}_{}history.json'.format(network, epochs, session_start, suffix)), 'w') as his_file:
-    json.dump(history.history, his_file)
+    json.dump(output, his_file)
