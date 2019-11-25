@@ -40,8 +40,13 @@ model = keras.models.load_model(args.Model)
 print('Done')
 
 
+predictions = np.ndarray((1,5))
+
 print('Computing predictions...')
-predictions = model.predict(frames)
+for window in frames:
+    # predictions = model.predict(frames)
+    pred = model.predict(np.expand_dims(window,axis=0))
+    predictions = np.concatenate((predictions, pred),axis=0)
 print('Done')
 
 # output file
@@ -51,4 +56,4 @@ out = os.path.join(args.output,
         else 'p{}_lecture_video_predictions.npy'.format(args.participant))
 
 print('Saving predictions to {}..'.format(out))
-np.save(out, predictions)
+np.save(out, predictions[1:,...])
