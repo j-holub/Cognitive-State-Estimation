@@ -53,12 +53,8 @@ data_shape = np.load(os.path.join(dir, data_files[0])).shape
 # basic name pattern for the output file
 outfile_name = 'all_{}'.format(data_files[0][4:-9])
 
-# labels
-all_labels = np.ndarray(data_shape[0]*len(data_files))
-
-# memory map for the data
-all_data = np.memmap('{}.memmap'.format(outfile_name), dtype='uint8', mode='w+', \
-            shape=(data_shape[0]*len(data_files), *data_shape[1:]))
+all_labels = np.ndarray([1])
+all_data =   np.ndarray([1, *data_shape[1:]])
 
 print('Merging files...')
 # transfer all the data to the memory map
@@ -70,16 +66,18 @@ for i, (data_file, labels_file) in (enumerate(zip(data_files, label_files))):
     data   = np.load(os.path.join(dir,data_file))
     labels = np.load(os.path.join(dir,labels_file))
 
-    all_data[i*data_shape[0]:i*data_shape[0]+data_shape[0],...] = data
-    all_labels[i*data_shape[0]:i*data_shape[0]+data_shape[0]] = labels
+    # all_data[i*data_shape[0]:i*data_shape[0]+data_shape[0],...] = data
+    # all_labels[i*data_shape[0]:i*data_shape[0]+data_shape[0]] = labels
+    all_data = np.concatenate((all_data, data), axis=0)
+    all_labels = np.concatenate((all_labels, labels), axis=0)
 print('')
 
 print('Writing data to disc...')
 # save the data
-np.save(os.path.join(out_dir, '{}_data.npy'.format(outfile_name)), all_data)
-np.save(os.path.join(out_dir, '{}_labels.npy'.format(outfile_name)), all_labels)
+np.save(os.path.join(out_dir, '{}_data.npy'.format(outfile_name)), all_data[1:,...])
+np.save(os.path.join(out_dir, '{}_labels.npy'.format(outfile_name)), all_labels[1:,...])
 print("  {}".format(os.path.join(out_dir, '{}_data.npy'.format(outfile_name))))
 print("  {}".format(os.path.join(out_dir, '{}_labels.npy'.format(outfile_name))))
 
 # remove the memory map
-os.remove('{}.memmap'.format(outfile_name))
+# os.remove('{}.memmap'.format(outfile_name))
