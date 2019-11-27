@@ -33,10 +33,10 @@ class ResultsHandler:
         return list(self.__results.keys())
 
     def get_test_acc(self):
-        return self.get_metric('acc')
+        return self.get_metric('accuracy')
 
     def get_val_acc(self):
-        return self.get_metric('val_acc')
+        return self.get_metric('val_accuracy')
 
     def get_test_loss(self):
         return self.get_metric('loss')
@@ -46,7 +46,7 @@ class ResultsHandler:
 
 
     def get_metric(self, metric):
-        assert metric in ['acc', 'loss', 'val_acc', 'val_loss']
+        assert metric in ['accuracy', 'loss', 'val_accuracy', 'val_loss']
 
         met = {}
         for p in self.__results.keys():
