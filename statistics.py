@@ -15,6 +15,9 @@ Parameters:
     csv (flag):
         if set a csv file with the same name as given on 'output' is generated on
         top of the JSON file. This will not include the global average
+    heatmap-plot(str):
+        if set a heatmap of the score count will be plotted and saved to the directory
+        specified by this parameter
 """
 
 
@@ -22,6 +25,7 @@ import argparse
 import json
 import os
 
+import lib.plot as plot
 import lib.statistics as statistic
 
 
@@ -32,12 +36,13 @@ parser.add_argument('--output', '-o', default='statistics.json',
                      help='The output JSON file to store the statistics')
 parser.add_argument('--csv', action='store_true',
                      help="If set the script will create a csv file as well")
+parser.add_argument('--heatmap-plot', '-hmp',
+                     help='Where to save the heatmap plot picture if set')
 arguments = parser.parse_args()
 
 # get the absolute paths to the csv files
 exp_data_files = [os.path.abspath(file) for file in arguments.ExperimentData]
 out_file       = os.path.abspath(arguments.output)
-
 
 assert all([
     os.path.exists(file) and
@@ -47,6 +52,9 @@ assert all([
 ])
 
 assert os.path.splitext(out_file)[1] == '.json'
+
+if arguments.heatmap_plot:
+    assert os.path.exists(arguments.heatmap_plot)
 
 # statistic object
 stat = statistic.Statistic()
@@ -75,6 +83,9 @@ statistics['std_deviation'] = global_std_deviation.tolist()
 statistics['score_count'] = stat.global_score_count().tolist()
 
 
+
+
+
 # write the output as json
 with open(out_file, 'w') as out:
     json.dump(statistics, out)
@@ -89,3 +100,9 @@ if(arguments.csv):
             out.write(','.join([str(round(value,2)) for value in average_subject_scores[i,...].tolist()]))
             out.write('\n')
         print('Saved output to {}'.format(csv_file))
+
+if arguments.heatmap_plot:
+    import matplotlib.pyplot as plt
+
+    plot.score_heatmap(stat.global_score_count())
+    plt.savefig(os.path.join(arguments.heatmap_plot, 'score_heatmap.png'))
