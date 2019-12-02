@@ -17,6 +17,3 @@ def score_heatmap(scores: np.ndarray):
     # set the ticks for the labels
     ax.set_yticklabels(range(1,6))
     ax.set_xticklabels(range(1,11))
-
-    # axislabels
-    plt.xlabel('Score', fontsize=12)
