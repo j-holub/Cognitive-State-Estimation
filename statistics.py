@@ -85,7 +85,6 @@ statistics['score_count'] = stat.global_score_count().tolist()
 
 
 
-
 # write the output as json
 with open(out_file, 'w') as out:
     json.dump(statistics, out)
@@ -96,8 +95,8 @@ if(arguments.csv):
     csv_file = '{}.csv'.format(os.path.splitext(out_file)[0])
     with open(csv_file, 'w') as out:
         for i in range(average_subject_scores.shape[0]):
-            out.write('p{:02},'.format(i))
-            out.write(','.join([str(round(value,2)) for value in average_subject_scores[i,...].tolist()]))
+            out.write('p{:02},'.format(i+1))
+            out.write(','.join([str(int(value)) for value in (average_subject_scores[i,...]*10).tolist()]))
             out.write('\n')
         print('Saved output to {}'.format(csv_file))
 
