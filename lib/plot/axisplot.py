@@ -84,7 +84,7 @@ def acc_distribution_plot(accuracies: list, labels: list):
 
     # set limites for x and y axis
     plt.xlim(0,1)
-    plt.ylim(-1,25)
+    plt.ylim(-1, 25)
 
     # axis labels
     plt.xlabel('Accuracy', fontsize=12)
@@ -95,7 +95,7 @@ def acc_distribution_plot(accuracies: list, labels: list):
 
     # x axis markers
     steps = np.arange(0,1.05,0.05)
-    print(np.arange(0.1,1.1,0.1))
+
     # plot vertical lines for the accuracy
     for acc in np.arange(0.1,1.1,0.1):
         ax.axvline(
@@ -115,6 +115,7 @@ def acc_distribution_plot(accuracies: list, labels: list):
         in steps
     ] for data in accuracies]
 
+
     # plot the accuracy _distributions
     for i in range(len(plot_data)):
         plt.plot(
@@ -122,7 +123,7 @@ def acc_distribution_plot(accuracies: list, labels: list):
             plot_data[i],
             'o-',
             label=labels[i],
-            color=colours()[i],
+            color=colours()[::2][i],
             clip_on=False
         )
 
