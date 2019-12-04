@@ -61,12 +61,8 @@ subparser = parser.add_subparsers(dest='Metric')
 
 # confusion matrix parser
 confm = subparser.add_parser('confmat')
-confm.add_argument('ValidationData',
-                    help='The validation data to input to the network')
-confm.add_argument('ValidationLabels',
-                    help='The validationlabels to check the predictions against')
-confm.add_argument('Model',
-                    help='The trained model as a .h5 file')
+confm.add_argument('ConfusionMatrix',
+                    help='The confusion matrix as a numpy array')
 confm.add_argument('--output', '-o',
                     default='.',
                     help='Where to output the confusion matrix image')
@@ -135,50 +131,49 @@ acc_distribution.add_argument('HistoryFiles',
                                nargs='+',
                                help='The history files output by the training')
 acc_distribution.add_argument('--metric', '-m',
-                               default='acc',
-                               choices=['acc', 'val_acc'],
+                               default='accuracy',
+                               choices=['accuracy', 'val_accuracy'],
                                help='The metric that should be compared')
 acc_distribution.add_argument('--output','-o',
                                default='.',
                                help='Where to output the plot image')
+
+
+
+stats = subparser.add_parser('statistic')
+stats.add_argument('HistoryFiles',
+                    nargs='+',
+                    help='The history files output by the training')
+
+
+
 args = parser.parse_args()
 
 
 # confusion matrix part
 if(args.Metric == 'confmat'):
 
-    import keras.models
-    import keras.utils
-    import lib.deeplearning as deepl
-    import lib.statistics   as stat
-
-    data_file  = os.path.abspath(args.ValidationData)
-    label_file = os.path.abspath(args.ValidationLabels)
-    model_file = os.path.abspath(args.Model)
+    conf_mat_path = os.path.abspath(args.ConfusionMatrix)
     out_dir    = os.path.abspath(args.output)
 
+    assert os.path.exists(conf_mat_path)
     assert os.path.exists(out_dir)
 
 
     # load the data
-    frames = np.load(data_file)
-    labels = np.load(label_file)
-    labels = keras.utils.to_categorical(labels)[...,1:]
-
-
-    # load the model
-    model = keras.models.load_model(model_file)
-
-    # compute the confusion matrix
-    confmat = stat.confusion_mat(model, frames, labels)
+    confmat = np.load(conf_mat_path)
 
     # plot it
     fig, ax = plt.subplots()
-    ax.matshow(confmat)
+    ax.matshow(confmat, cmap=plt.cm.Reds, vmin=0.0, vmax=1.0)
+    ax.set_xticklabels(['', '1', '2', '3', '4', '5'])
+    ax.set_yticklabels(['', '1', '2', '3', '4', '5'])
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
 
     # set the values to the cells
     for (i,j), v in np.ndenumerate(confmat):
-        ax.text(j,i, '{:0.2f}'.format(v), ha='center', va='center')
+        ax.text(j,i, '{:0.2f}%'.format(v*100), ha='center', va='center')
 
     plt.savefig(os.path.join(out_dir, 'confmat.png'))
 
