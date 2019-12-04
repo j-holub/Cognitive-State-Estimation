@@ -7,6 +7,19 @@ from keras.layers import Dense
 from keras import optimizers
 
 def of_network():
+    """The neural network as proposed in 'Dual Temporal Scale Convolutional
+    Neural Network for Micro-Expression Recognition' by Peng et al.
+
+    This CNN was originally proposed for micro expression classification on
+    CASME I and CASME II but we try to adapt it to Cognitive Load Estimation
+    from facial movement.
+
+    Input layer has the shape batch_sizex64x128x128x3
+
+    Returns:
+        keras model: the model object storing the information about the network
+    """
+
 
     model = Sequential()
 
