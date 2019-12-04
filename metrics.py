@@ -90,12 +90,12 @@ metric_compare.add_argument('HistoryFiles',
 metric_compare.add_argument('--metrics', '-m',
                        nargs='+',
                        choices=[
-                        'acc',
-                        'val_acc',
+                        'accuracy',
+                        'val_accuracy',
                         'loss',
                         'val_loss'
                        ],
-                       default=['acc', 'val_acc'],
+                       default=['accuracy', 'val_accuracy'],
                        help='The metrics that should be displayed in the grouped barchart')
 metric_compare.add_argument('--axisname', '-ax',
                        default='Accuracy',
@@ -205,14 +205,19 @@ elif (args.Metric == 'loss' or args.Metric == 'accuracy'):
             )
         else:
             plot.accuracy_axisplot(
-                [data['acc'], data['val_acc']],
+                [data['accuracy'], data['val_accuracy']],
                 ['Training', 'Validation']
             )
 
     # get the participant's indentifier from the history file
-    p = match = re.search('p\d\d', history_file).group()
-    # save the graph as an
-    plt.savefig(os.path.join(out_dir, '{}_{}.png'.format(p, args.Metric)))
+    match = re.search('p\d\d', history_file)
+
+    if(match):
+        p = match.group()
+        # save the graph as an
+        plt.savefig(os.path.join(out_dir, '{}_{}.png'.format(p, args.Metric)))
+    else:
+        plt.savefig(os.path.join(out_dir, 'all_{}.png'.format(args.Metric)))
 
 # barchart
 elif(args.Metric == 'metric_compare'):
