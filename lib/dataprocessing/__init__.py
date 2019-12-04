@@ -22,7 +22,6 @@ Classes:
 
 from .datahandler    import DataHandler
 from .experimentdata import ExperimentData
-from .statistic      import Statistic
 from .video          import VideoHandler
 
 from .util import *
