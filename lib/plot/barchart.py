@@ -55,5 +55,7 @@ def barchart(
     ax.set_xticklabels(labels)
     ax.legend(loc='upper right')
 
+    plt.ylabel(y_label)
+
     # rotate the labels
     fig.autofmt_xdate()
