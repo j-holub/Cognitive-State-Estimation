@@ -4,7 +4,7 @@ import os
 
 import numpy as np
 
-import lib.dataprocessing as dp
+from lib.dataprocessing import DataHandler
 
 parser = argparse.ArgumentParser()
 parser.add_argument('RawDataDir',
@@ -88,14 +88,14 @@ if twoclass:
     frame_files = [file
                     for file
                     in frame_files
-                    if os.path.basename(file)[0] == '1'
-                    or os.path.basename(file)[0] == '5'
+                    if os.path.basename(file)[0] != '3'
+                    # or os.path.basename(file)[0] == '5'
                   ]
     gt_files = [file
                     for file
                     in gt_files
-                    if os.path.basename(file)[0] == '1'
-                    or os.path.basename(file)[0] == '5'
+                    if os.path.basename(file)[0] != '3'
+                    # or os.path.basename(file)[0] == '5'
                   ]
     suffix = suffix + '_twoclass'
 
@@ -104,7 +104,7 @@ if twoclass:
 if not spb:
 
     # initialize the data handler
-    data_handler = dp.DataHandler((windowsize, *shape, 1), subsample)
+    data_handler = DataHandler((windowsize, *shape, 1), subsample)
 
     # iterate over all the data
     for frames, gt in zip(frame_files, gt_files):
@@ -116,8 +116,16 @@ if not spb:
             gt_data = json.load(gt_file)
             # load the frames
             frame_data = np.load(frames)
+
+            # set the ground truth accordingly
+            if ground_truth == 'n' and twoclass:
+                # merge 1,2 and 4,5 into one class
+                gt = 1 if gt_data[ground_truth] in [1,2] else 2
+            else:
+                gt = gt_data[ground_truth]
+
             # add the frames to the datahandler
-            data_handler.add_frames(frame_data, gt_data[ground_truth])
+            data_handler.add_frames(frame_data, gt)
 
 
     print("Writing data to disk...")
@@ -132,8 +140,8 @@ if not spb:
 # data to be used in single person training
 else:
     # seperate datahandler for training and validation data
-    train_data_handler = dp.DataHandler((windowsize, *shape, 1), subsample)
-    valid_data_handler = dp.DataHandler((windowsize, *shape, 1), subsample)
+    train_data_handler = DataHandler((windowsize, *shape, 1), subsample)
+    valid_data_handler = DataHandler((windowsize, *shape, 1), subsample)
 
     for i, (frames, gt) in enumerate(zip(frame_files, gt_files)):
         # make sure the two files belong to each other
@@ -149,10 +157,12 @@ else:
             # if the ground truth metric is n and the two class option
             # is set, class 5 should be labeled with 2 for the one hot
             # encoding returned by keras.utils.to_categorical
-            gt = 2 if ground_truth == 'n' \
-                    and gt_data[ground_truth] == 5 \
-                    and twoclass \
-                   else gt_data[ground_truth]
+            if ground_truth == 'n' and twoclass:
+                # merge 1,2 and 4,5 into one class
+                gt = 1 if gt_data[ground_truth] in [1,2] else 2
+            else:
+                gt = gt_data[ground_truth]
+
 
             # validation set
             # last one of each difficulty is used for validation
