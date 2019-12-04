@@ -311,3 +311,51 @@ elif (args.Metric == 'acc_dist'):
     out_file_name = '{}_distribution.png'.format(args.metric)
     # save the graph as an
     plt.savefig(os.path.join(args.output, out_file_name))
+
+elif (args.Metric == 'statistic'):
+
+    import lib.plot as plot
+
+    resh = plot.ResultsHandler()
+
+    results_files = [os.path.abspath(file) for file in args.HistoryFiles]
+
+    resh = plot.ResultsHandler()
+
+    for res_file in results_files:
+        resh.add_result_file(res_file)
+
+    val_acc = list(resh.get_val_acc().values())
+    acc     = list(resh.get_test_acc().values())
+
+    # average validation accuracy
+    avrg_val_acc = np.mean(val_acc)
+    # standard deviation of the validation accuracy
+    std_dev_val_acc = np.std(val_acc)
+    # max validation accaurcy
+    max_val_acc = np.max(val_acc)
+    # min validation accaurcy
+    min_val_acc = np.min(val_acc)
+
+
+    # average accuracy
+    avrg_acc = np.mean(acc)
+    # standard deviation of the accuracy
+    std_dev_acc = np.std(acc)
+    # max accaurcy
+    max_acc = np.max(acc)
+    # min accaurcy
+    min_acc = np.min(acc)
+
+
+    print('Validation Accuracy:')
+    print('  Average: {:.4f}'.format(avrg_val_acc))
+    print('  Standard Deviation: {:.4f}'.format(std_dev_val_acc))
+    print('  Maximum: {:.4f}'.format(max_val_acc))
+    print('  Minimum: {:.4f}'.format(min_val_acc))
+
+    print('Training Accuracy:')
+    print('  Average: {:.4f}'.format(avrg_acc))
+    print('  Standard Deviation: {:.4f}'.format(std_dev_acc))
+    print('  Maximum: {:.4f}'.format(max_acc))
+    print('  Minimum: {:.4f}'.format(min_acc))
