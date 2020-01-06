@@ -3,7 +3,7 @@
 This scripts serves the purpose to merge the data of all the participants into
 one big .npy file that can then be input to a neural network
 
----------------
+...
 
 Parameters:
     Data (str):

@@ -25,6 +25,7 @@ There are 4 different networks available
         Same network as clitw but with only two neurons on the output layer for
         a 2 class classification task
 
+...
 
 Arguments:
     Network (str):

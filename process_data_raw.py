@@ -19,6 +19,8 @@ There are three ways to process the video data
         optical flow estimation is computed to create an rgb image the encodes
         the movement between two images using the HSV color space
 
+...
+
 Arguments:
 
     ProcessesMethod:

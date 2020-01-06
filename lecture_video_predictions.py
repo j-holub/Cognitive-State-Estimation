@@ -1,3 +1,23 @@
+""" This script computes the predictions for the data recorded while the
+participants were watching a lecture video, to see how their cognitive load
+changes throughout the course of the lecture video
+
+It outputs the predictions as numpy .npy file
+
+...
+
+Arguments:
+    Frames (str):
+        path to file containing all the training samples for the lecture video part
+    Model (str):
+        path to a saved keras model file that was trained beforehand
+    --output, -o (optional, str):
+        path where the output file should be saved to
+    --participant, -p (optional, str):
+        can be used to add the any string to the output file. It is meant for the
+        participant ID
+"""
+
 import argparse
 import os
 

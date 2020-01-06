@@ -13,6 +13,8 @@ participant
 The data can also be grouped into a single data and a single ground truth file
 to combine it with the data of other participants.
 
+...
+
 Arguments:
     RawDataDir
         The directory containing all the output files (.npy and .json) generated
