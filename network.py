@@ -1,3 +1,56 @@
+""" This script launches a neural network training session using Keras and Tensorflow
+
+This script serves as a basic interface to all the neural networks provided in this
+project. It is used to loat a network with the training and validation data,
+performs the training over a set number of epochs and saves the best epochs for
+the training and valiation set as a model and outputs a history file.
+
+There are 4 different networks available
+    clitw
+        Originally proposed by Fridman et al. in 2018 in their work "Cognitive
+        Load Estimation in the Wild". The network is adapted to have 5 neurons
+        on the output layer for the 5 n classes, It is used for cognitive load
+        estimation from time series of face or eye images
+    score
+        The same netwok as clitw as porposed by Fridman et al., but it features
+        a single neuron on the output layer for a regression task, to estimate
+        the score achieved on the n-back trial from the video data
+    opticalflow
+        Originally proposed by Peng at al. in 2019 in their work "Dual Temporal
+        Scale Convolutional Neural Network for Micro-Expression Recognition", this
+        network was intended to be used for micro-expression classification. we
+        adapted the network to use it for Cognitive Load Estimation from timeseries
+        of facial optical flow images
+    twoclass_clitw
+        Same network as clitw but with only two neurons on the output layer for
+        a 2 class classification task
+
+
+Arguments:
+    Network (str):
+        One of 'clitw', 'score', 'opticalflow' or 'twoclass_clitw
+    TrainingFeatures(str):
+        Path to the .npy file containing the features for the training set
+    TrainingLabels(str):
+        Path to the .npy file containing the labels for the training set
+    ValidationFeatures(str):
+        Path to the .npy file containing the features for the validation set
+    ValidationLabels(str):
+        Path to the .npy file containing the features for the validation set
+    --epochs, -e (optional, int):
+        Number of epochs to train
+        default: 10
+    --save-model, -sm (optional, str):
+        path where the models are saved to
+        default: '.'
+    --save-history, -sh (optional, str):
+        path where the history file is saved to
+        default: '.'
+    --suffix, -sf (optional, str)
+        any arbitrary string that is added to the end of the output files
+"""
+
+
 import argparse
 import datetime
 import json
