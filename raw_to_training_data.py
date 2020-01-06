@@ -1,3 +1,48 @@
+""" This script takes the .npy files extraced by the process_data_raw.py script
+and couples them into files for the training and validation of a model. The script
+works on the data of a single participant and has to be evoked multiple times if you
+want to process the data of multiple participants
+
+This scripts couples the frames into chunks of a certain windowsize (default is 60)
+and can subsample them if needed.
+
+The data can be grouped as a balanced dataset for a single person, where 4 trials
+of each difficulty level are used for the training set and 1 for the validation
+set. This provides a perfectly balanced dataset to train a model for a single
+participant
+The data can also be grouped into a single data and a single ground truth file
+to combine it with the data of other participants.
+
+Arguments:
+    RawDataDir
+        The directory containing all the output files (.npy and .json) generated
+        by the process_data_raw.py script
+    --single-person-balanced, -spb (optional, flag)
+        If set, the data is split into a training and validation set for this
+        single person. The out will be 4 files, training plus validation data and
+        training plus validation labels
+    --two-classm -tc (optional, flag)
+        If set, classes 1 and 2 will be merged into one class, 4 and 5 will be
+        merged and 3 will be omitted. This creates a two class dataset,
+        corresponding to low and high cognitive load
+    --ground-truth, -gt (optical, str)
+        Must be one of 'n' or 'score'. Denotes which ground truth measure should
+        be used, either the difficulty n of the n-back trial or the score value
+        achieved on the trial
+        default: 'n'
+    --window, -w (optional, int)
+        The window sized that should be used
+        default: 60
+    --subsample, -ss (optional, int)
+        Subsampling rate that should be used. If set to x>1, every x-th frame
+        will be used for a window
+        default: 1
+    --output, -o (optional, str)
+        The output directory
+        default: '.'
+"""
+
+
 import argparse
 import json
 import os
@@ -16,7 +61,9 @@ parser.add_argument('--single-person-balanced', '-spb',
                            validation data for this single person will be created')
 parser.add_argument('--two-class', '-tc',
                      action='store_true',
-                     help='If set, only classes 1 and 5 will be used')
+                     help='If set, classes 1,2  and 4,5 will be merged into one \
+                           class and class 3 will be omitted. This results in a \
+                           two class dataset')
 parser.add_argument('--ground-truth', '-gt',
                      choices=['n', 'score'],
                      default='n',

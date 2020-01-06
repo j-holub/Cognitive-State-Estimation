@@ -1,3 +1,45 @@
+""" This script processed the recorded video data from the experiment into numpy
+arrays
+
+This script loads the experiment data, recorded by the JsPsych n-back experiment.
+It extracts the timestamps of the trials and loads these chunks of videos from the
+recorded video data. These chunks are then processed frame by frame and stored into
+a numpy array and saved into .npy files. On top of that the ground truth labels are
+stored in a seperate .npy files.
+The script creates two seperate files for each of the 25 trials, a .npy file for the
+frame data and a .json file for the ground truth labels.
+
+There are three ways to process the video data
+    face
+        frame by frame the face is extracted and saved as a greyscale image
+    eye
+        frame by frame the right eye is extracted and saved as a greyscale image
+    opticalflow
+        frame by frame the face is extracted and for consecutive frames, the
+        optical flow estimation is computed to create an rgb image the encodes
+        the movement between two images using the HSV color space
+
+Arguments:
+
+    ProcessesMethod:
+        'eye', 'face', 'opticalflow'
+    ExperimentData
+        path to the directory that contains all the experiment data. The .json
+        file and the video file
+    --output, -o (optional, str):
+        directory to store the output files in
+        default: '.'
+    --crop, -c (optional, int):
+        the crop size of the extracted images (squared)
+        default: 64
+    --lecture-video (optional, flag):
+        if this flag is set, instead of the trials the data is extracted for the
+        lecture video part of the experiment. This part does not contain ground
+        truth data
+"""
+
+
+
 import argparse
 import json
 import os
