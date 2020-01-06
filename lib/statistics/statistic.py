@@ -25,6 +25,9 @@ class Statistic:
             global_std_deviation()
                 computes the standard deviations of the average_scores for each n
                 level and returns them as a 5 element vector
+            global_score_count()
+                returns a 5x10 matrix as a numpy array to shows for which difficulty
+                levels (1-5), how often the possible scores (1-10) were achieved
     """
 
 

@@ -21,8 +21,12 @@ class VideoHandler:
         get_frames(start, end, crop)
             retrieves the frames between two timestamps
         get_optical_flow_frames(start, end, crop)
-            retrieves the frames between two timestamps
+            retrieves the frames between two timestamps, cropped to the face,
             and computes the optical flow between consecutive
+            frames
+        get_eye_frames(start, end, crop)
+            retrieves the frames between two timestamps, cropped to the right
+            eye, and computes the optical flow between consecutive
             frames
     """
 
@@ -162,6 +166,23 @@ class VideoHandler:
 
 
     def get_eye_frames(self, start: datetime, end: datetime, crop: int):
+        """Returns the frames cropped to the eye between two timestamps
+
+        Given the start timestamp and end timestamp as datetime objects, this
+        method will return a numpy array with all the frames inbetween, cropped
+        to the eye
+
+        Parameters:
+            start (datetime):
+                start timestamp
+            end (datetime):
+                end timestamp
+            crop (int):
+                size the face image should be cropped to (squared)
+
+        Returns:
+            ndarray: numpy array of the shape (frames, crop, crop)
+        """
 
         # calculate the timestamps for the boundaries
         start_timestamp = ((start - self.__video_start).total_seconds() * 1000)

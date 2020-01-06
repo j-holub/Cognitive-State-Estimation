@@ -4,6 +4,22 @@ from keras.layers import MaxPooling3D, GlobalMaxPool3D
 from keras.layers import Dense
 
 def twoclass_CLitW_network(windowsize: int = 60):
+    """The neural network as proposed in 'Cognitive Load in the Wild' as a 2 class
+       network
+
+    This CNN was proposed for 0-back / 1-back / 2-back classification using
+    sequences of eye images
+
+    This network has 2 neurons on the output layer for 2 class classification
+
+    Parameters:
+        windowsize (int):
+            width of one chunk that is input to the network
+            default: 60
+
+    Returns:
+        keras model: the model object storing the information about the network
+    """
 
     model = Sequential()
 

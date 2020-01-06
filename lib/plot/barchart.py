@@ -11,6 +11,24 @@ def barchart(
         data_label: list,
         y_label: str
     ):
+    """ Plots a barchart plot for multiple approaches for a multi-user basis
+
+    Plots multiple values (usually loss or accuracy) in grouped barcharts on a
+    multi-user basis. One bargroup per user with a bar per values
+
+    This function used matplotlib and sets the state for the pyplot object.
+    This means this function has side-effects
+
+    labels (list):
+        labels for the x-axis, usually the user names / IDs
+    data (list):
+        list of datasets to plot
+    data_label (list):
+        labels for the datasets
+    y_label (String):
+        label for the y-axis
+
+    """
 
     assert len(data) == len(data_label)
 

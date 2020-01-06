@@ -1,5 +1,13 @@
 
 def colours():
+    """ Returns the tableau20 colors as a list of three-dimensional tuples of
+        numbers between 0 and 1
+
+        Returns:
+            List: list of tuples of color values given by rgb values between 0
+                  and 1
+    """
+
     # Tablea20 Colors for prettier plots
     tableau20 = [(31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),
              (44, 160, 44), (152, 223, 138), (214, 39, 40), (255, 152, 150),
@@ -13,6 +21,10 @@ def colours():
 
 
 def clean_plot(ax):
+    """ Removes any unnecessary clutter in the plot figure, such as the frame
+        borders around the plot
+    """
+    
     # Remove the plot frame lines. They are unnecessary chartjunk.
     ax.spines["top"].set_visible(False)
     ax.spines["bottom"].set_visible(False)

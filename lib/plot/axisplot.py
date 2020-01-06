@@ -5,6 +5,21 @@ from .util import colours, clean_plot
 
 
 def loss_axisplot(data: list, labels: list):
+    """ Plots the loss developement over the training epochs
+
+        This function can plot an arbitrary amount of loss developement defined
+        by the input. Can be used to plot training and validation loss into one
+        plot or to plot the loss developement of multiple models into one plot
+
+        This function used matplotlib and sets the state for the pyplot object.
+        This means this function has side-effects
+
+        data (list):
+            list of loss datasets that should be plotted
+        labels (list):
+            list of strings denoting the labels for the loss data given in data
+    """
+
     assert len(data) == len(labels)
 
     fig, ax = plt.subplots()
@@ -38,6 +53,21 @@ def loss_axisplot(data: list, labels: list):
 
 
 def accuracy_axisplot(data: list, labels: list):
+    """ Plots the accuracy developement over the training epochs
+
+        This function can plot an arbitrary amount of accuracy developement defined
+        by the input. Can be used to plot training and validation accuracy into one
+        plot or to plot the accuracy developement of multiple models into one plot
+
+        This function used matplotlib and sets the state for the pyplot object.
+        This means this function has side-effects
+
+        data (list):
+            list of accuracy datasets that should be plotted
+        labels (list):
+            list of strings denoting the labels for the accuracy data given in data
+    """
+
     assert len(data) == len(labels)
 
     fig, ax = plt.subplots()
@@ -74,7 +104,19 @@ def accuracy_axisplot(data: list, labels: list):
     plt.legend(loc='upper right')
 
 
+
 def acc_distribution_plot(accuracies: list, labels: list):
+    """ Plots the distribution of the accuracies achieved on a multi-user-approach.
+        The achieved accuracies are denoted on the y-axis and the number of users,
+        for which this accuracy was achieved is denoted on the x-axis
+
+        accuracies (list):
+            list of lists of top accuracies achieved by the different models
+            one list per approach, that contains the top accuracies for every user
+        labels (list):
+            label for the different approaches
+    """
+
     assert len(accuracies) == len(labels)
 
     fig, ax = plt.subplots()
