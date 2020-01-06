@@ -1,3 +1,17 @@
+""" Computes the confusion matrix from a trained model file and the validation
+data and labels. The output is a numpy .npy file.
+
+...
+
+Arguments
+    ResultsBaseDir (str):
+        Directory containing the model file, the validation data and the validation
+        labels
+    --output, -o (optional, str):
+        Directory where the output should be saved to
+        default: '.'
+"""
+
 import argparse
 import os
 
