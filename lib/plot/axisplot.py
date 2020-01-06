@@ -171,8 +171,3 @@ def acc_distribution_plot(accuracies: list, labels: list):
 
     # plot the legend
     plt.legend()
-
-
-def single_axisplot(data: np.array, x_axis: np.array):
-
-    plt.plot(data, x_axis, 'o-', color=colours()[i])
