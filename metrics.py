@@ -11,40 +11,98 @@ The following metrics are available
         Plots the loss from the output provided by the Keras history object
     accuracy
         Plots the accuracy from the output provided by the Keras history object
+    metric_compare
+        barchart plot that compares different metrics for the same approach
+    approach_compare:
+        barchart plot that compares the same metric for different approaches
+    acc_dist:
+        a plot that shows for different accuracy threshold values, how many of
+        the participants the network was able to achieve at least that accuracy score
+    statistic:
+        lists different statistical metrics for the input history files
 
 ...
 
 Parameters
     Metric (str):
-        Which metric shold to compute
+        Which metric to compute
             confmat: confusion matrix
             loss: loss time series for epochs
             accuracy: accuracy time series for epochs
+            metric_compare: barchart plot that compares different metrics for
+                            the same approach
+            approach_compare: barchart plot that compares the same metric for
+                              different approaches
+            acc_dist: a plot that shows for different accuracy threshold
+                      values, how many of the participants the network
+                      was able to achieve at least that accuracy score
+            statistic: lists different statistical metrics for the input history
+                       files
 
-    loss/accuracy:
+
+    ----- The following parameters depend on the chosen metric -----
+
+    confmat:
+        ConfusionMatrix (str):
+            Path to a .npy file containing the confusion matrix
+        output (str, optional):
+            path where to output the plot graphic
+            default: .
+
+
+    loss / accuracy:
         History (str):
             path to the history json file output by training the neural networks
         output (str, optional):
             path where to output the plot graphic
             default: .
 
-    confmat:
-        Data (str):
-            data that is input to the network to predict the label for, a .npy
-            file created by the process_data.py script
-        Labels (str):
-            ground truth labels to check the predictions against to compute the
-            confusion matrix
-        Model (str):
-            model file created by keras. Has to be in .h5 format
-        validation-split (float, optional):
-            How to split the data into train and test data. Only the test data
-            is used to compute the confusion matrix. Should be the same as used
-            when training the network
-            default: 0.9
+
+    metric_compare:
+        HistoryFiles(multiple str):
+            the different history files retrieved from training the models on the
+            different participant's data
+        metrics (multiple str, optional):
+            must be one of 'accuracy', 'loss', 'val_accuracy' or 'val_loss'. It
+            does not make sense to use loss and accuracy in the same plot
+            default: accuracy, val_accuracy
+        axisname (str, optional):
+            name of the y-axis
+            default: Accuracy
         output (str, optional):
             path where to output the plot graphic
             default: .
+
+
+    approach_compare:
+        face (multiple str, optional):
+            history files for the face image approach
+        eye (multiple str, optional):
+            history files for the eye image approach
+        metric (str, optional):
+            the metric that should be compared between the two approaches. Must
+            be one of 'accuracy', 'val_accuracy', 'loss' or 'val_loss'.
+            default: accuracy
+        axisname (str, optional):
+            name of the y-axis
+            default: Accuracy
+        output (str, optional):
+            path where to output the plot graphic
+            default: .
+
+
+    acc_dist:
+        HistoryFiles(multiple str):
+            the different history files retrieved from training the models on the
+            different participant's data
+        metric (str, optional):
+            the metric that should be used for the distribution. Either 'accuracy'
+            or 'val_accuracy'
+            default: accuracy
+        output (str, optional):
+            path where to output the plot graphic
+            default: .
+
 """
 
 
@@ -59,6 +117,8 @@ import numpy as np
 parser = argparse.ArgumentParser()
 subparser = parser.add_subparsers(dest='Metric')
 
+
+
 # confusion matrix parser
 confm = subparser.add_parser('confmat')
 confm.add_argument('ConfusionMatrix',
@@ -66,6 +126,8 @@ confm.add_argument('ConfusionMatrix',
 confm.add_argument('--output', '-o',
                     default='.',
                     help='Where to output the confusion matrix image')
+
+
 
 # loss
 loss = subparser.add_parser('loss')
@@ -76,12 +138,14 @@ loss.add_argument('--output', '-o',
                    help='Where to output the plot image')
 
 
+
 accuracy = subparser.add_parser('accuracy')
 accuracy.add_argument('History',
                        help='History output file from the network training')
 accuracy.add_argument('--output', '-o',
                        default='.',
                        help='Where to output the plot image')
+
 
 
 metric_compare = subparser.add_parser('metric_compare')
@@ -114,8 +178,8 @@ approach_compare.add_argument('--eye', '-e',
                                nargs='+',
                                help='Result files for the eye approach')
 approach_compare.add_argument('--metric', '-m',
-                               default='acc',
-                               choices=['acc', 'val_acc', 'loss', 'val_loss'],
+                               default='accuracy',
+                               choices=['accuracy', 'val_accuracy', 'loss', 'val_loss'],
                                help='The metric that should be compared')
 approach_compare.add_argument('--axisname', '-ax',
                                default='Accuracy',
@@ -150,7 +214,12 @@ stats.add_argument('HistoryFiles',
 args = parser.parse_args()
 
 
-# confusion matrix part
+
+
+# ####### #
+# confmat #
+# ####### #
+
 if(args.Metric == 'confmat'):
 
     conf_mat_path = os.path.abspath(args.ConfusionMatrix)
@@ -179,7 +248,10 @@ if(args.Metric == 'confmat'):
 
 
 
-# loss plot
+# ############### #
+# loss / accuracy #
+# ############### #
+
 elif (args.Metric == 'loss' or args.Metric == 'accuracy'):
     import re
     import lib.plot as plot
@@ -219,7 +291,12 @@ elif (args.Metric == 'loss' or args.Metric == 'accuracy'):
     else:
         plt.savefig(os.path.join(out_dir, 'all_{}.png'.format(args.Metric)))
 
-# barchart
+
+
+# ############## #
+# metric_compare #
+# ############## #
+
 elif(args.Metric == 'metric_compare'):
 
     assert os.path.exists(args.output) and os.path.isdir(args.output)
@@ -252,6 +329,10 @@ elif(args.Metric == 'metric_compare'):
     plt.savefig(os.path.join(args.output, out_file_name))
 
 
+
+# ################ #
+# approach_compare #
+# ################ #
 
 elif(args.Metric == 'approach_compare'):
 
@@ -292,6 +373,10 @@ elif(args.Metric == 'approach_compare'):
 
 
 
+# ######## #
+# acc_dist #
+# ######## #
+
 elif (args.Metric == 'acc_dist'):
 
     assert os.path.exists(args.output) and os.path.isdir(args.output)
@@ -311,6 +396,12 @@ elif (args.Metric == 'acc_dist'):
     out_file_name = '{}_distribution.png'.format(args.metric)
     # save the graph as an
     plt.savefig(os.path.join(args.output, out_file_name))
+
+
+
+# ######### #
+# statistic #
+# ######### #
 
 elif (args.Metric == 'statistic'):
 
