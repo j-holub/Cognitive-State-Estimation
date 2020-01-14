@@ -9,7 +9,7 @@ We proposed three approaches in total. The first approach works on time series o
 We conducted our experiment with 23 participants and trained the models on a user-dependant and a user-independent basis. The results are shown in the following table:
 
 |               | Average | Maximum | Minimum | Standard Deviation |
-|---------------|:-------:|---------|:-------:|--------------------|
+|---------------|:-------:|:-------:|:-------:|:------------------:|
 | Facial Images |  50.16% |   80%   |  22.5%  |       13.25%       |
 |    Eye Images |  43.19% |   65%   |  28.75% |        9.22%       |
 |  Optical Flow |  33.64% |  43.75% |   25%   |        6.02%       |
