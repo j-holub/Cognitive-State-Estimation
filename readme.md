@@ -57,3 +57,20 @@ The following scripts are available
 * **lecture_video_predictions**
 
   Computes the predictions for the lecture video segment of the experiment, where the participants were just watching a lecture video to see, how their cognitive load changes
+
+
+## References
+
+### Important Papers
+
+* [Cognitive Load Estimation in the Wild, Fridman et al. 2018](https://dl.acm.org/doi/10.1145/3173574.3174226)
+* [Dual Temporal Scale Convolutional Neural Network for Micro-Expression Recognition, Peng at al. 2017](https://www.frontiersin.org/articles/10.3389/fpsyg.2017.01745/full)
+
+### Important Libraries
+
+* [Keras](https://keras.io)
+* [TensorFlow](https://www.tensorflow.org)
+* [NumPy](https://numpy.org)
+* [OpenCV](https://opencv.org)
+* [OpenFace - Face Recognition with Deep Neural Networks](https://github.com/cmusatyalab/openface)
+* [Matplotlib](https://matplotlib.org)
