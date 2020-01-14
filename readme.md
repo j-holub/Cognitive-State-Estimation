@@ -2,7 +2,23 @@
 
 This repository holds the code I used for my master thesis **Estimating Cognitive Load Using Deep Learning Methods**, supervised by Prof. Dr. Andreas Dengel and Dr. Shoya Ishimaru at the DFKI Kaiserslautern.
 
-In the thesis we proposed different approaches based on deep learning approaches, that work with visual data, to estimate the cognitive load of a human. To evaluate these approaches we conducted a psychological experiment, namely the n-back experiment to record data. In this experiment the participants have to solve the same task in 5 different difficulty levels 1-5 (n). We trained deep learning models to estimate the difficulty level n from the facial and eye movements because past research has linked these movements to the cognitive state of a human.
+In the thesis we proposed different deep-learning-based approaches, that work with visual data, to estimate the cognitive load of a human. To evaluate these approaches we conducted a psychological experiment, namely the n-back experiment to record data. In this experiment the participants have to solve the same task in 5 different difficulty levels 1-5 (n). Past research has linked eye and facial movements to the cognitive state. We trained deep learning models to estimate the difficulty level n from the facial and eye movements using time series of video frames.
+
+We proposed three approaches in total. The first approach works on time series of facial images, the second approach on time series of eye images and the third one works on optical flow estimation images, that were computed from facial images to encode the movements between frames. Approaches one and two utulise the same neural nework architecture, that was originally proposed by [Fridman et al.](https://dl.acm.org/doi/10.1145/3173574.3174226). The third approaches utilises a network that was used for micro-expression classification and proposed by [Peng et al.](https://www.frontiersin.org/articles/10.3389/fpsyg.2017.01745/full).
+
+We conducted our experiment with 23 participants and trained the models on a user-dependant and a user-independent basis. The results are shown in the following table:
+
+|               | Average | Maximum | Minimum | Standard Deviation |
+|---------------|:-------:|---------|:-------:|--------------------|
+| Facial Images |  50.16% |   80%   |  22.5%  |       13.25%       |
+|    Eye Images |  43.19% |   65%   |  28.75% |        9.22%       |
+|  Optical Flow |  33.64% |  43.75% |   25%   |        6.02%       |
+
+
+For the user-independent case, the results were 22.94% (Facial), 22.56% (Eye) and 22.45% (Optical Flow). These results show, that the approaches do not generalise across the data of different participants, which is inherently different. Different persons might show different signs of an increased cognitive load. Futhermore, the comparibilty of the data is questionable, since some users had a lot of trouble with for example 5-back and some didn't. This raises the question if those two sets of data, labelled with the same label, is actually comarable in terms of cognitive load.
+
+On a user-dependent basis the approaches work fairly well for a 5-class problem. The problem is the lack of data available for each participants. With a widnowsize of 60 frames per sample we had 320 training samples and 80 validation samples.
+
 
 
 ## Setup
